@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alexander Emili - Software Engineer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+
+        .resume-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+
+        .header .title {
+            font-size: 1.2rem;
+            color: #6c757d;
+            font-weight: 400;
+            margin-bottom: 15px;
+        }
+
+        .contact-info {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .contact-info a {
+            color: #495057;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .contact-info a:hover {
+            color: #007bff;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #dee2e6;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .skill-category {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #007bff;
+        }
+
+        .skill-category h4 {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 8px;
+        }
+
+        .skill-category p {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        .experience-item {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #f1f3f4;
+        }
+
+        .experience-item:last-child {
+            border-bottom: none;
+        }
+
+        .job-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        .job-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .company {
+            color: #007bff;
+            font-weight: 500;
+        }
+
+        .duration {
+            color: #6c757d;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        .job-description {
+            margin-left: 0;
+        }
+
+        .job-description ul {
+            margin-left: 20px;
+            margin-bottom: 10px;
+        }
+
+        .job-description li {
+            margin-bottom: 6px;
+            color: #495057;
+        }
+
+        .project {
+            margin: 15px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border-left: 3px solid #28a745;
+        }
+
+        .project-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .tech-stack {
+            color: #6c757d;
+            font-style: italic;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+        }
+
+        .project ul {
+            margin-left: 20px;
+        }
+
+        .project li {
+            margin-bottom: 4px;
+            color: #495057;
+            font-size: 0.95rem;
+        }
+
+        .certification, .education {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            margin-bottom: 15px;
+        }
+
+        .cert-title, .edu-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .cert-date, .edu-date {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        .actions {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #545b62;
+        }
+
+        @media (max-width: 768px) {
+            .resume-container {
+                padding: 20px;
+                margin: 10px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .contact-info {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .job-header {
+                flex-direction: column;
+                gap: 5px;
+            }
+
+            .actions {
+                position: static;
+                justify-content: center;
+                margin-bottom: 20px;
+            }
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .resume-container {
+                box-shadow: none;
+                border-radius: 0;
+                padding: 20px;
+            }
+
+            .actions {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="actions">
+        <button class="btn btn-primary" onclick="convertToMarkdown()">Export Markdown</button>
+        <button class="btn btn-secondary" onclick="downloadPDF()">Download PDF</button>
+    </div>
+
+    <div class="resume-container" id="resume-content">
+        <header class="header">
+            <h1>Alexander Emili</h1>
+            <div class="title">Software Engineer</div>
+            <div class="contact-info">
+                <a href="mailto:emili.xander@gmail.com">emili.xander@gmail.com</a>
+                <a href="#" target="_blank">Personal Website</a>
+                <a href="#" target="_blank">LinkedIn</a>
+                <a href="#" target="_blank">GitHub</a>
+            </div>
+        </header>
+
+        <section class="section">
+            <h2 class="section-title">Skills</h2>
+            <div class="skills-grid">
+                <div class="skill-category">
+                    <h4>Languages</h4>
+                    <p>Python, JavaScript, TypeScript, C#, CSS, HTML</p>
+                </div>
+                <div class="skill-category">
+                    <h4>Frameworks</h4>
+                    <p>Vue, Django, React, Flask</p>
+                </div>
+                <div class="skill-category">
+                    <h4>Tools</h4>
+                    <p>Docker, Celery, GitHub, Jira</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">Experience</h2>
+            
+            <div class="experience-item">
+                <div class="job-header">
+                    <div>
+                        <div class="job-title">Platform Engineer</div>
+                        <div class="company">Sandbox Banking</div>
+                    </div>
+                    <div class="duration">2022 - Current</div>
+                </div>
+                <div class="job-description">
+                    <ul>
+                        <li>Provisioned and managed deployments for 100+ customers across multiple data-centers</li>
+                        <li>Migrated jobs from cron-schedules to a celery based queue system</li>
+                    </ul>
+                    
+                    <div class="project">
+                        <div class="project-title">GlyueETL</div>
+                        <div class="tech-stack">Python, Django, Vue</div>
+                        <ul>
+                            <li>New product that generated 60k ARR within 2 months</li>
+                            <li>Allows for dynamic python expressions in a secure sandboxed environment</li>
+                            <li>Node based editor for composable workflows with schema management</li>
+                            <li>Used celery workers to handle 10GB+ files for processing with scheduled syncs</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="project">
+                        <div class="project-title">Glyue</div>
+                        <div class="tech-stack">Python, Django, Vue</div>
+                        <ul>
+                            <li>Implemented an idempotency feature, a version-history features, diffing-tools, automated service discovery</li>
+                            <li>Provided wrappers for metric tracking throughout the application</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="experience-item">
+                <div class="job-header">
+                    <div>
+                        <div class="job-title">Programmer/Analyst</div>
+                        <div class="company">Resource Data Inc</div>
+                    </div>
+                    <div class="duration">2021</div>
+                </div>
+                <div class="job-description">
+                    <ul>
+                        <li>Worked under an agile framework using both Jira and GitHub as well as Microsoft Azure DevOps</li>
+                        <li>Addressed internal system bugs using SQL migration scripts and LINQ statements</li>
+                    </ul>
+                    
+                    <div class="project">
+                        <div class="project-title">Career Connect Washington</div>
+                        <div class="tech-stack">C#, React, JavaScript</div>
+                        <ul>
+                            <li>Refactored search features to trigger 50% less rerenders</li>
+                            <li>Implemented the GoogleMaps API to display directory results in the State of Washington</li>
+                            <li>Nested a React form within an iframe to take inputs</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="experience-item">
+                <div class="job-header">
+                    <div>
+                        <div class="job-title">Investment Analyst</div>
+                        <div class="company">Alaska Permanent Capital Management</div>
+                    </div>
+                    <div class="duration">2018 - 2020</div>
+                </div>
+                <div class="job-description">
+                    <ul>
+                        <li>Financial analysis and portfolio management experience</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">Personal Projects</h2>
+            
+            <div class="project">
+                <div class="project-title">Stock Tracker</div>
+                <div class="tech-stack">React, Express, Sequelize, Node-Cron</div>
+                <ul>
+                    <li>Configured Node backend using Express and Sequelize ORM to validate requests and database queries</li>
+                    <li>Used node-cron and Service Workers to perform regular database updates for daily portfolio tracking</li>
+                </ul>
+            </div>
+            
+            <div class="project">
+                <div class="project-title">Portfolio Optimizer</div>
+                <div class="tech-stack">Python, Finance APIs</div>
+                <ul>
+                    <li>Gives classical finance metrics to a given stock portfolio</li>
+                    <li>Integrates with external LLMs to get input as to the explanations of the portfolio items</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">Certifications</h2>
+            <div class="certification">
+                <div class="cert-title">CFA Level III Exam</div>
+                <div class="cert-date">Passed June 2021</div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">Education</h2>
+            <div class="education">
+                <div class="edu-title">Saint Vincent College, Latrobe PA</div>
+                <div class="edu-date">BS Computational Finance and Math (2013-2017)</div>
+            </div>
+        </section>
+    </div>
+
+    <script src="resume-converter.js"></script>
+</body>
+</html>
