@@ -1,1 +1,11 @@
 *.zip
+/node_modules
+
+/build
+/dist
+
+.DS_Store
+.env
+.env.local
+
+.vscode
