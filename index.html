@@ -1,512 +1,605 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>~/xander - devlog</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap');
-        
-        :root {
-            --bg-primary: #1f2430;
-            --bg-secondary: #242b38;
-            --bg-tertiary: #343e4c;
-            --text-primary: #d9d7ce;
-            --text-secondary: #5c6773;
-            --text-accent: #ffcc66;
-            --text-green: #bae67e;
-            --text-blue: #73d0ff;
-            --text-purple: #d4bfff;
-            --text-orange: #ff8f40;
-            --text-red: #f28779;
-            --border: #3d4751;
-            --cursor: #ffcc66;
-        }
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>~/xander - devlog</title>
+        <style>
+            @import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap");
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+            :root {
+                --bg-primary: #1f2430;
+                --bg-secondary: #242b38;
+                --bg-tertiary: #343e4c;
+                --text-primary: #d9d7ce;
+                --text-secondary: #5c6773;
+                --text-accent: #ffcc66;
+                --text-green: #bae67e;
+                --text-blue: #73d0ff;
+                --text-purple: #d4bfff;
+                --text-orange: #ff8f40;
+                --text-red: #f28779;
+                --border: #3d4751;
+                --cursor: #ffcc66;
+            }
 
-        body {
-            font-family: 'JetBrains Mono', monospace;
-            background-color: var(--bg-primary);
-            color: var(--text-primary);
-            line-height: 1.6;
-            overflow-x: hidden;
-        }
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
+            body {
+                font-family: "JetBrains Mono", monospace;
+                background-color: var(--bg-primary);
+                color: var(--text-primary);
+                line-height: 1.6;
+                overflow-x: hidden;
+            }
 
-        /* Terminal-style blinking cursor */
-        .cursor::after {
-            content: '█';
-            color: var(--cursor);
-            animation: blink 1s infinite;
-        }
-
-        @keyframes blink {
-            0%, 50% { opacity: 1; }
-            51%, 100% { opacity: 0; }
-        }
-
-        /* Matrix-style background effect */
-        .matrix-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: -1;
-            opacity: 0.1;
-        }
-
-        header {
-            padding: 40px 0;
-            border-bottom: 2px solid var(--border);
-            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
-        }
-
-        .terminal-header {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 20px;
-            position: relative;
-        }
-
-        .terminal-header::before {
-            content: '● ● ●';
-            position: absolute;
-            top: 8px;
-            left: 12px;
-            color: var(--text-secondary);
-            font-size: 12px;
-        }
-
-        .ascii-art {
-            color: var(--text-green);
-            font-size: 12px;
-            line-height: 1.2;
-            margin-bottom: 20px;
-            text-align: center;
-            font-family: 'JetBrains Mono', 'Courier New', monospace;
-            white-space: pre;
-            overflow-x: auto;
-        }
-
-        .prompt {
-            color: var(--text-blue);
-            font-weight: 600;
-        }
-
-        .command {
-            color: var(--text-accent);
-        }
-
-        .output {
-            color: var(--text-primary);
-            margin-left: 20px;
-        }
-
-        .section {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            margin: 30px 0;
-            padding: 30px;
-            position: relative;
-        }
-
-        .section::before {
-            content: attr(data-title);
-            position: absolute;
-            top: -12px;
-            left: 20px;
-            background: var(--bg-primary);
-            color: var(--text-accent);
-            padding: 0 10px;
-            font-size: 14px;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-
-        .section h2 {
-            color: var(--text-green);
-            margin-bottom: 20px;
-            font-size: 1.5em;
-            font-weight: 600;
-        }
-
-        .section h2::before {
-            content: '$ ';
-            color: var(--text-blue);
-        }
-
-        .tree-structure {
-            font-family: 'JetBrains Mono', monospace;
-            color: var(--text-primary);
-            line-height: 1.8;
-        }
-
-        .tree-structure a {
-            color: var(--text-blue);
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-
-        .tree-structure a:hover {
-            color: var(--text-accent);
-            text-decoration: underline;
-        }
-
-        .tree-item {
-            margin: 8px 0;
-            padding: 8px 0;
-            border-left: 2px solid transparent;
-            padding-left: 15px;
-            transition: all 0.3s ease;
-        }
-
-        .tree-item:hover {
-            border-left-color: var(--text-accent);
-            background: rgba(255, 204, 102, 0.05);
-        }
-
-        .project-meta {
-            color: var(--text-secondary);
-            font-size: 0.9em;
-            margin-left: 20px;
-        }
-
-        .skill-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .skill-category {
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 20px;
-            position: relative;
-        }
-
-        .skill-category h4 {
-            color: var(--text-purple);
-            margin-bottom: 15px;
-            font-size: 1em;
-            font-weight: 600;
-        }
-
-        .skill-category h4::before {
-            content: '> ';
-            color: var(--text-orange);
-        }
-
-        .skill-list {
-            list-style: none;
-        }
-
-        .skill-list li {
-            color: var(--text-primary);
-            margin: 8px 0;
-            padding-left: 20px;
-            position: relative;
-        }
-
-        .skill-list li::before {
-            content: '◦';
-            position: absolute;
-            left: 0;
-            color: var(--text-accent);
-        }
-
-        .hobby-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
-
-        .hobby-item {
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 20px;
-            position: relative;
-        }
-
-        .hobby-item h3 {
-            color: var(--text-orange);
-            margin-bottom: 10px;
-            font-weight: 600;
-        }
-
-        .hobby-item h3::before {
-            content: '# ';
-            color: var(--text-secondary);
-        }
-
-        .status-bar {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 15px;
-            margin: 20px 0;
-            font-size: 0.9em;
-        }
-
-        .status-item {
-            display: inline-block;
-            margin-right: 30px;
-            color: var(--text-secondary);
-        }
-
-        .status-value {
-            color: var(--text-green);
-            font-weight: 600;
-        }
-
-        .contact-terminal {
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 20px;
-            font-family: 'JetBrains Mono', monospace;
-        }
-
-        .contact-line {
-            margin: 10px 0;
-            display: flex;
-            align-items: center;
-        }
-
-        .contact-line .prompt {
-            margin-right: 10px;
-        }
-
-        .social-links {
-            display: flex;
-            gap: 20px;
-            margin-top: 20px;
-            flex-wrap: wrap;
-        }
-
-        .social-link {
-            color: var(--text-blue);
-            text-decoration: none;
-            padding: 8px 15px;
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            transition: all 0.3s ease;
-            font-family: 'JetBrains Mono', monospace;
-        }
-
-        .social-link:hover {
-            background: var(--bg-tertiary);
-            border-color: var(--text-accent);
-            color: var(--text-accent);
-        }
-
-        .footer {
-            text-align: center;
-            padding: 40px 0;
-            border-top: 2px solid var(--border);
-            margin-top: 60px;
-            color: var(--text-secondary);
-        }
-
-        @media (max-width: 768px) {
             .container {
-                padding: 0 15px;
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 0 20px;
             }
-            
-            .section {
+
+            /* Terminal-style blinking cursor */
+            .cursor::after {
+                content: "█";
+                color: var(--cursor);
+                animation: blink 1s infinite;
+            }
+
+            @keyframes blink {
+                0%,
+                50% {
+                    opacity: 1;
+                }
+                51%,
+                100% {
+                    opacity: 0;
+                }
+            }
+
+            /* Matrix-style background effect */
+            .matrix-bg {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                pointer-events: none;
+                z-index: -1;
+                opacity: 0.1;
+            }
+
+            header {
+                padding: 40px 0;
+                border-bottom: 2px solid var(--border);
+                background: linear-gradient(
+                    135deg,
+                    var(--bg-primary) 0%,
+                    var(--bg-secondary) 100%
+                );
+            }
+
+            .terminal-header {
+                background: var(--bg-secondary);
+                border: 1px solid var(--border);
+                border-radius: 8px;
                 padding: 20px;
+                margin-bottom: 20px;
+                position: relative;
             }
-            
+
+            .terminal-header::before {
+                content: "● ● ●";
+                position: absolute;
+                top: 8px;
+                left: 12px;
+                color: var(--text-secondary);
+                font-size: 12px;
+            }
+
             .ascii-art {
-                font-size: 10px;
+                color: var(--text-green);
+                font-size: 12px;
+                line-height: 1.2;
+                margin-bottom: 20px;
+                text-align: center;
+                font-family: "JetBrains Mono", "Courier New", monospace;
+                white-space: pre;
+                overflow-x: auto;
             }
-            
-            .skill-grid, .hobby-grid {
-                grid-template-columns: 1fr;
+
+            .prompt {
+                color: var(--text-blue);
+                font-weight: 600;
             }
-        }
 
-        /* Scrollbar styling */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
+            .command {
+                color: var(--text-accent);
+            }
 
-        ::-webkit-scrollbar-track {
-            background: var(--bg-primary);
-        }
+            .output {
+                color: var(--text-primary);
+                margin-left: 20px;
+            }
 
-        ::-webkit-scrollbar-thumb {
-            background: var(--border);
-            border-radius: 4px;
-        }
+            .section {
+                background: var(--bg-secondary);
+                border: 1px solid var(--border);
+                border-radius: 8px;
+                margin: 30px 0;
+                padding: 30px;
+                position: relative;
+            }
 
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--text-secondary);
-        }
-    </style>
-</head>
-<body>
-    <div class="matrix-bg"></div>
-    
-    <header>
-        <div class="container">
-            <div class="terminal-header">
-                <div class="ascii-art">
-       .--.                   .---.   
-   .---|__|           .-.     |~~~|   
-.--|===|--|_          |_|     |~~~|--.
-|  |===|  |'\     .---!~|  .--|   |--|
-|%%|   |  |.'\    |===| |--|%%|   |  |
-|%%|   |  |\.'\   |   | |__|  |   |  |
-|  |   |  | \  \  |===| |==|  |   |  |
-|  |   |__|  \.'\ |   |_|__|  |~~~|__|
-|  |===|--|   \.'\|===|~|--|%%|~~~|--|
-^--^---'--^    `-'`---^-^--^--^---'--'
+            .section::before {
+                content: attr(data-title);
+                position: absolute;
+                top: -12px;
+                left: 20px;
+                background: var(--bg-primary);
+                color: var(--text-accent);
+                padding: 0 10px;
+                font-size: 14px;
+                font-weight: 600;
+                text-transform: uppercase;
+            }
 
-x a n d e r ' s   d e v l o g
-                </div>
-                <div class="tree-structure">
-                    <span class="prompt">user@machine</span>:<span class="command">~</span>$ whoami<br>
-                    <span class="output">Alexander Emili | Software Developer</span><br>
-                    <span class="prompt">user@machine</span>:<span class="command">~</span>$ cat status.txt<br>
-                    <span class="output">Platform Engineer at Sandbox Banking</span><br>
-                    <span class="prompt">user@machine</span>:<span class="command">~</span>$ ls -la social/<br>
-                    <div class="social-links">
-                        <a href="https://github.com/xanemili" class="social-link">./github</a>
-                        <a href="https://www.linkedin.com/in/xemili/" class="social-link">./linkedin</a>
-                        <a href="mailto:xanemili@proton.me" class="social-link">./email</a>
-                        <a href="resume.html" class="social-link">./resume.html</a>
+            .section h2 {
+                color: var(--text-green);
+                margin-bottom: 20px;
+                font-size: 1.5em;
+                font-weight: 600;
+            }
+
+            .section h2::before {
+                content: "$ ";
+                color: var(--text-blue);
+            }
+
+            .tree-structure {
+                font-family: "JetBrains Mono", monospace;
+                color: var(--text-primary);
+                line-height: 1.8;
+            }
+
+            .tree-structure a {
+                color: var(--text-blue);
+                text-decoration: none;
+                transition: color 0.3s ease;
+            }
+
+            .tree-structure a:hover {
+                color: var(--text-accent);
+                text-decoration: underline;
+            }
+
+            .tree-item {
+                margin: 8px 0;
+                padding: 8px 0;
+                border-left: 2px solid transparent;
+                padding-left: 15px;
+                transition: all 0.3s ease;
+            }
+
+            .tree-item:hover {
+                border-left-color: var(--text-accent);
+                background: rgba(255, 204, 102, 0.05);
+            }
+
+            .project-meta {
+                color: var(--text-secondary);
+                font-size: 0.9em;
+                margin-left: 20px;
+            }
+
+            .skill-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 15px;
+                margin-top: 20px;
+            }
+
+            .skill-category {
+                background: var(--bg-tertiary);
+                border: 1px solid var(--border);
+                border-radius: 6px;
+                padding: 20px;
+                position: relative;
+            }
+
+            .skill-category h4 {
+                color: var(--text-purple);
+                margin-bottom: 15px;
+                font-size: 1em;
+                font-weight: 600;
+            }
+
+            .skill-category h4::before {
+                content: "> ";
+                color: var(--text-orange);
+            }
+
+            .skill-list {
+                list-style: none;
+            }
+
+            .skill-list li {
+                color: var(--text-primary);
+                margin: 8px 0;
+                padding-left: 20px;
+                position: relative;
+            }
+
+            .skill-list li::before {
+                content: "◦";
+                position: absolute;
+                left: 0;
+                color: var(--text-accent);
+            }
+
+            .hobby-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 20px;
+                margin-top: 20px;
+            }
+
+            .hobby-item {
+                background: var(--bg-tertiary);
+                border: 1px solid var(--border);
+                border-radius: 6px;
+                padding: 20px;
+                position: relative;
+            }
+
+            .hobby-item h3 {
+                color: var(--text-orange);
+                margin-bottom: 10px;
+                font-weight: 600;
+            }
+
+            .hobby-item h3::before {
+                content: "# ";
+                color: var(--text-secondary);
+            }
+
+            .status-bar {
+                background: var(--bg-secondary);
+                border: 1px solid var(--border);
+                border-radius: 6px;
+                padding: 15px;
+                margin: 20px 0;
+                font-size: 0.9em;
+            }
+
+            .status-item {
+                display: inline-block;
+                margin-right: 30px;
+                color: var(--text-secondary);
+            }
+
+            .status-value {
+                color: var(--text-green);
+                font-weight: 600;
+            }
+
+            .contact-terminal {
+                background: var(--bg-tertiary);
+                border: 1px solid var(--border);
+                border-radius: 6px;
+                padding: 20px;
+                font-family: "JetBrains Mono", monospace;
+            }
+
+            .contact-line {
+                margin: 10px 0;
+                display: flex;
+                align-items: center;
+            }
+
+            .contact-line .prompt {
+                margin-right: 10px;
+            }
+
+            .social-links {
+                display: flex;
+                gap: 20px;
+                margin-top: 20px;
+                flex-wrap: wrap;
+            }
+
+            .social-link {
+                color: var(--text-blue);
+                text-decoration: none;
+                padding: 8px 15px;
+                border: 1px solid var(--border);
+                border-radius: 4px;
+                transition: all 0.3s ease;
+                font-family: "JetBrains Mono", monospace;
+            }
+
+            .social-link:hover {
+                background: var(--bg-tertiary);
+                border-color: var(--text-accent);
+                color: var(--text-accent);
+            }
+
+            .footer {
+                text-align: center;
+                padding: 40px 0;
+                border-top: 2px solid var(--border);
+                margin-top: 60px;
+                color: var(--text-secondary);
+            }
+
+            @media (max-width: 768px) {
+                .container {
+                    padding: 0 15px;
+                }
+
+                .section {
+                    padding: 20px;
+                }
+
+                .ascii-art {
+                    font-size: 10px;
+                }
+
+                .skill-grid,
+                .hobby-grid {
+                    grid-template-columns: 1fr;
+                }
+            }
+
+            /* Scrollbar styling */
+            ::-webkit-scrollbar {
+                width: 8px;
+            }
+
+            ::-webkit-scrollbar-track {
+                background: var(--bg-primary);
+            }
+
+            ::-webkit-scrollbar-thumb {
+                background: var(--border);
+                border-radius: 4px;
+            }
+
+            ::-webkit-scrollbar-thumb:hover {
+                background: var(--text-secondary);
+            }
+        </style>
+    </head>
+    <body>
+        <div class="matrix-bg"></div>
+
+        <header>
+            <div class="container">
+                <div class="terminal-header">
+                    <div class="ascii-art">
+                        .--. .---. .---|__| .-. |~~~| .--|===|--|_ |_| |~~~|--.
+                        | |===| |'\ .---!~| .--| |--| |%%| | |.'\ |===| |--|%%|
+                        | | |%%| | |\.'\ | | |__| | | | | | | | \ \ |===| |==| |
+                        | | | | |__| \.'\ | |_|__| |~~~|__| | |===|--|
+                        \.'\|===|~|--|%%|~~~|--| ^--^---'--^
+                        `-'`---^-^--^--^---'--' x a n d e r ' s d e v l o g
                     </div>
-                </div>
-            </div>
-        </div>
-    </header>
-
-    <main>
-        <div class="container">
-            <div class="status-bar">
-                <span class="status-item">Last Login: <span class="status-value">Today</span></span>
-                <span class="status-item">Status: <span class="status-value">Available</span></span>
-                <span class="status-item">Uptime: <span class="status-value">97.9%</span></span>
-            </div>
-
-            <section class="section" data-title="ABOUT">
-                <h2>./about.md</h2>
-                <p>Former investment analyst who decided building apps was more fun</p>
-            </section>
-
-            <section class="section" data-title="CURRENT_WORK">
-                <h2>./current-work/</h2>
-                <div class="tree-structure">
-                    ├── <strong>primary-role/</strong><br>
-                    │   ├── <span style="color: var(--text-blue);">company:</span> Sandbox Banking<br>
-                    │   ├── <span style="color: var(--text-blue);">position:</span> Platform Engineer<br>
-                    │   ├── <span style="color: var(--text-blue);">duration:</span> 2022 - Present<br>
-                    │   └── <span style="color: var(--text-blue);">description:</span> Led development of ETL platform serving 100+ enterprise customers.<br>
-                    ├── <strong>side-projects/</strong><br>
-                    │   ├── <a href="https://portfolio.xanxan.me">Portfolio Optimizer</a><br>
-                    │   │   └── <span class="project-meta">Python/FastAPI - Classical finance metrics with LLM integration</span><br>
-                    └── <a href="https://recipe.xanxan.me">Recipie sharing platform</a><br>
-                        └── <span class="project-meta">/Docker - Microservices for real-time transaction processing</span>
-                </div>
-            </section>
-
-            <section class="section" data-title="SKILLS">
-                <h2>./skills --list</h2>
-                <div class="skill-grid">
-                    <div class="skill-category">
-                        <h4>languages</h4>
-                        <ul class="skill-list">
-                            <li>TypeScript</li>
-                            <li>JavaScript</li>
-                            <li>Python</li>
-                            <li>Go</li>
-                            <li>SQL</li>
-                        </ul>
-                    </div>
-                    
-                    <div class="skill-category">
-                        <h4>frameworks</h4>
-                        <ul class="skill-list">
-                            <li>Vue.js</li>
-                            <li>React/Next.js</li>
-                            <li>Node.js</li>
-                            <li>Django</li>
-                            <li>FastAPI</li>
-                        </ul>
-                    </div>
-                    
-                    <div class="skill-category">
-                        <h4>cloud tools</h4>
-                        <ul class="skill-list">
-                            <li>Docker</li>
-                            <li>AWS/EC2/RDS/S3</li>
-                            <li>GitHub Actions</li>
-                        </ul>
-                    </div>
-                    
-                    <div class="skill-category">
-                        <h4>databases</h4>
-                        <ul class="skill-list">
-                            <li>PostgreSQL</li>
-                            <li>MySQL</li>
-                            <li>SQLite</li>
-                            <li>Redis</li>
-                        </ul>
-                    </div>
-                </div>
-            </section>
-
-            <section class="section" data-title="CONTACT">
-                <h2>./contact.sh</h2>
-                <div class="contact-terminal">
-                    <div class="contact-line">
-                        <span class="prompt">$</span>
-                        <span style="color: var(--text-primary);">echo "Feel free to reach out for collaborations, opportunities, or just to chat"</span>
-                    </div>
-                    <div class="contact-line">
-                        <span class="prompt">$</span>
-                        <span style="color: var(--text-primary);">rg email contact/email.md</span>
-                    </div>
-                    <div class="contact-line">
-                        <div class="output" style="color: var(--text-green);">1:
-                            <a href="mailto:xanemili@proton.me" style="color: inherit;"> xanemili@proton.me </a>
+                    <div class="tree-structure">
+                        <span class="prompt">user@machine</span>:<span
+                            class="command"
+                            >~</span
+                        >$ whoami<br />
+                        <span class="output"
+                            >Alexander Emili | Software Developer</span
+                        ><br />
+                        <span class="prompt">user@machine</span>:<span
+                            class="command"
+                            >~</span
+                        >$ cat status.txt<br />
+                        <span class="output"
+                            >Platform Engineer at Sandbox Banking</span
+                        ><br />
+                        <span class="prompt">user@machine</span>:<span
+                            class="command"
+                            >~</span
+                        >$ ls -la social/<br />
+                        <div class="social-links">
+                            <a
+                                href="https://github.com/xanemili"
+                                class="social-link"
+                                >./github</a
+                            >
+                            <a
+                                href="https://www.linkedin.com/in/xemili/"
+                                class="social-link"
+                                >./linkedin</a
+                            >
+                            <a
+                                href="mailto:xanemili@proton.me"
+                                class="social-link"
+                                >./email</a
+                            >
+                            <a href="resume.html" class="social-link"
+                                >./resume.html</a
+                            >
                         </div>
                     </div>
-                    <div class="contact-line">
-                        <span class="prompt">$</span>
-                        <span style="color: var(--text-primary);">curl -s status.api | jq '.availability'</span>
-                    </div>
-                    <div class="contact-line">
-                        <span class="output" style="color: var(--text-green);">"Open to new opportunities"</span>
-                    </div>
                 </div>
-            </section>
-        </div>
-    </main>
+            </div>
+        </header>
 
-    <footer class="footer">
-        <div class="container">
-            <p>© 2025 Xander Emili | Built with <span style="color: var(--text-red);">❤️</span> Hosted on GitHub Pages</p>
-        </div>
-    </footer>
-</body>
+        <main>
+            <div class="container">
+                <div class="status-bar">
+                    <span class="status-item"
+                        >Last Login:
+                        <span class="status-value">Today</span></span
+                    >
+                    <span class="status-item"
+                        >Status:
+                        <span class="status-value">Available</span></span
+                    >
+                    <span class="status-item"
+                        >Uptime: <span class="status-value">97.9%</span></span
+                    >
+                </div>
+
+                <section class="section" data-title="ABOUT">
+                    <h2>./about.md</h2>
+                    <p>
+                        Former investment analyst who decided building apps was
+                        more fun
+                    </p>
+                </section>
+
+                <section class="section" data-title="CURRENT_WORK">
+                    <h2>./current-work/</h2>
+                    <div class="tree-structure">
+                        ├── <strong>primary-role/</strong><br />
+                        │ ├──
+                        <span style="color: var(--text-blue)">company:</span>
+                        Sandbox Banking<br />
+                        │ ├──
+                        <span style="color: var(--text-blue)">position:</span>
+                        Platform Engineer<br />
+                        │ ├──
+                        <span style="color: var(--text-blue)">duration:</span>
+                        2022 - Present<br />
+                        │ └──
+                        <span style="color: var(--text-blue)"
+                            >description:</span
+                        >
+                        Led development of ETL platform serving 100+ enterprise
+                        customers.<br />
+                        ├── <strong>side-projects/</strong><br />
+                        │ ├──
+                        <a href="https://portfolio.xanxan.me"
+                            >Portfolio Optimizer</a
+                        ><br />
+                        │ │ └──
+                        <span class="project-meta"
+                            >Python/FastAPI - Classical finance metrics with LLM
+                            integration</span
+                        ><br />
+                        └──
+                        <a href="https://recipe.xanxan.me"
+                            >Recipie sharing platform</a
+                        ><br />
+                        └──
+                        <span class="project-meta"
+                            >/Docker - Microservices for real-time transaction
+                            processing</span
+                        >
+                    </div>
+                </section>
+
+                <section class="section">
+                    <h2>./skills --list</h2>
+                    <div class="skill-grid">
+                        <div class="skill-category">
+                            <h4>languages</h4>
+                            <ul class="skill-list">
+                                <li>TypeScript</li>
+                                <li>JavaScript</li>
+                                <li>Python</li>
+                                <li>Go</li>
+                                <li>SQL</li>
+                            </ul>
+                        </div>
+
+                        <div class="skill-category">
+                            <h4>frameworks</h4>
+                            <ul class="skill-list">
+                                <li>Vue.js</li>
+                                <li>React/Next.js</li>
+                                <li>Node.js</li>
+                                <li>Django</li>
+                                <li>FastAPI</li>
+                            </ul>
+                        </div>
+
+                        <div class="skill-category">
+                            <h4>cloud tools</h4>
+                            <ul class="skill-list">
+                                <li>Docker</li>
+                                <li>AWS/EC2/RDS/S3</li>
+                                <li>GitHub Actions</li>
+                            </ul>
+                        </div>
+
+                        <div class="skill-category">
+                            <h4>databases</h4>
+                            <ul class="skill-list">
+                                <li>PostgreSQL</li>
+                                <li>MySQL</li>
+                                <li>SQLite</li>
+                                <li>Redis</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="section" data-title="CONTACT">
+                    <h2>./contact.sh</h2>
+                    <div class="contact-terminal">
+                        <div class="contact-line">
+                            <span class="prompt">$</span>
+                            <span style="color: var(--text-primary)"
+                                >echo "Feel free to reach out for
+                                collaborations, opportunities, or just to
+                                chat"</span
+                            >
+                        </div>
+                        <div class="contact-line">
+                            <span class="prompt">$</span>
+                            <span style="color: var(--text-primary)"
+                                >rg email contact/email.md</span
+                            >
+                        </div>
+                        <div class="contact-line">
+                            <div
+                                class="output"
+                                style="color: var(--text-green)"
+                            >
+                                1:
+                                <a
+                                    href="mailto:xanemili@proton.me"
+                                    style="color: inherit"
+                                >
+                                    xanemili@proton.me
+                                </a>
+                            </div>
+                        </div>
+                        <div class="contact-line">
+                            <span class="prompt">$</span>
+                            <span style="color: var(--text-primary)"
+                                >curl -s status.api | jq '.availability'</span
+                            >
+                        </div>
+                        <div class="contact-line">
+                            <span
+                                class="output"
+                                style="color: var(--text-green)"
+                                >"Open to new opportunities"</span
+                            >
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <div class="container">
+                <p>
+                    © 2025 Xander Emili | Built with
+                    <span style="color: var(--text-red)">❤️</span> Hosted on
+                    GitHub Pages
+                </p>
+            </div>
+        </footer>
+    </body>
 </html>
