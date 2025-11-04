@@ -70,7 +70,13 @@
                 height: 100%;
                 pointer-events: none;
                 z-index: -1;
-                opacity: 0.1;
+                opacity: 0.15;
+            }
+
+            #matrixCanvas {
+                display: block;
+                width: 100%;
+                height: 100%;
             }
 
             header {
@@ -375,7 +381,9 @@
         </style>
     </head>
     <body>
-        <div class="matrix-bg"></div>
+        <div class="matrix-bg">
+            <canvas id="matrixCanvas"></canvas>
+        </div>
 
         <header>
             <div class="container">
@@ -601,5 +609,70 @@
                 </p>
             </div>
         </footer>
+
+        <script>
+            // Matrix rain effect
+            const canvas = document.getElementById('matrixCanvas');
+            const ctx = canvas.getContext('2d');
+
+            // Set canvas size
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+
+            // Matrix characters - mix of letters, numbers, and symbols
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%^&*()_+-=[]{}|;:,.<>?/~`';
+            const fontSize = 14;
+            const columns = canvas.width / fontSize;
+
+            // Array to track y-position of drops for each column
+            const drops = [];
+            for (let i = 0; i < columns; i++) {
+                drops[i] = Math.random() * -100; // Start at random heights above the screen
+            }
+
+            // Draw function
+            function draw() {
+                // Semi-transparent black to create fade effect
+                ctx.fillStyle = 'rgba(31, 36, 48, 0.05)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // Set text color to the blue accent color
+                ctx.fillStyle = '#73d0ff';
+                ctx.font = fontSize + 'px JetBrains Mono, monospace';
+
+                // Loop through drops
+                for (let i = 0; i < drops.length; i++) {
+                    // Random character
+                    const text = chars.charAt(Math.floor(Math.random() * chars.length));
+
+                    // Draw character
+                    ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+                    // Reset drop to top randomly after it crosses the screen
+                    if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                        drops[i] = 0;
+                    }
+
+                    // Increment Y coordinate
+                    drops[i]++;
+                }
+            }
+
+            // Animation loop
+            setInterval(draw, 33); // ~30fps
+
+            // Handle resize - reset drops array
+            window.addEventListener('resize', () => {
+                const newColumns = canvas.width / fontSize;
+                drops.length = 0;
+                for (let i = 0; i < newColumns; i++) {
+                    drops[i] = Math.random() * -100;
+                }
+            });
+        </script>
     </body>
 </html>
