@@ -116,6 +116,20 @@
                 font-family: "JetBrains Mono", "Courier New", monospace;
                 white-space: pre;
                 overflow-x: auto;
+                position: relative;
+                height: 100px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            #particleCanvas {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                cursor: crosshair;
             }
 
             .prompt {
@@ -389,27 +403,11 @@
             <div class="container">
                 <div class="terminal-header">
                     <div class="ascii-art">
-                        .--. .---. .---|__| .-. |~~~| .--|===|--|_ |_| |~~~|--.
-                        | |===| |'\ .---!~| .--| |--| |%%| | |.'\ |===| |--|%%|
-                        | | |%%| | |\.'\ | | |__| | | | | | | | \ \ |===| |==| |
-                        | | | | |__| \.'\ | |_|__| |~~~|__| | |===|--|
-                        \.'\|===|~|--|%%|~~~|--| ^--^---'--^
-                        `-'`---^-^--^--^---'--' x a n d e r ' s d e v l o g
+                        <canvas id="particleCanvas"></canvas>
                     </div>
                     <div class="tree-structure">
-                        <span class="prompt">user@machine</span>:<span
-                            class="command"
-                            >~</span
-                        >$ whoami<br />
                         <span class="output"
-                            >Alexander Emili | Software Developer</span
-                        ><br />
-                        <span class="prompt">user@machine</span>:<span
-                            class="command"
-                            >~</span
-                        >$ cat status.txt<br />
-                        <span class="output"
-                            >Platform Engineer at Sandbox Banking</span
+                            >Xander Emili | Software Developer</span
                         ><br />
                         <span class="prompt">user@machine</span>:<span
                             class="command"
@@ -476,7 +474,7 @@
                         Platform Engineer<br />
                         │ ├──
                         <span style="color: var(--text-blue)">duration:</span>
-                        2022 - Present<br />
+                        2022 - 2025<br />
                         │ └──
                         <span style="color: var(--text-blue)"
                             >description:</span
@@ -485,23 +483,13 @@
                         customers.<br />
                         ├── <strong>side-projects/</strong><br />
                         │ ├──
-                        <a href="https://portfolio.xanxan.me"
-                            >Portfolio Optimizer</a
-                        ><br />
-                        │ │ └──
-                        <span class="project-meta"
-                            >Python/FastAPI - Classical finance metrics with LLM
-                            integration</span
-                        ><br />
-                        └──
-                        <a href="https://recipe.xanxan.me"
-                            >Recipie sharing platform</a
-                        ><br />
-                        └──
-                        <span class="project-meta"
-                            >/Docker - Microservices for real-time transaction
-                            processing</span
-                        >
+                        <a href="https://portfolio.xanxan.me">Portfolio Optimizer</a>
+                        <br />
+                        │ │ └──<span class="project-meta">Python/FastAPI - Classical finance metrics with LLM integration</span>
+                        <br />
+                        │ ├ <a href="https://knead.dev"> Knead - Recipie sharing platform </a>
+                        <br />
+                        └─└── <span class="project-meta">Svelte, Typescript, Cloudflare</span>
                     </div>
                 </section>
 
@@ -611,6 +599,188 @@
         </footer>
 
         <script>
+            // Book Particle Effect
+            const particleCanvas = document.getElementById('particleCanvas');
+            const pCtx = particleCanvas.getContext('2d');
+
+            // Set canvas size
+            function resizeParticleCanvas() {
+                const rect = particleCanvas.parentElement.getBoundingClientRect();
+                particleCanvas.width = rect.width;
+                particleCanvas.height = rect.height;
+                initBooks();
+            }
+
+            // Particle class
+            class Particle {
+                constructor(x, y, color) {
+                    this.homeX = x;
+                    this.homeY = y;
+                    this.x = x;
+                    this.y = y;
+                    this.vx = 0;
+                    this.vy = 0;
+                    this.color = color;
+                    this.size = 2;
+                }
+
+                update(mouseX, mouseY) {
+                    const dx = this.x - mouseX;
+                    const dy = this.y - mouseY;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    const minDist = 100;
+
+                    // Scatter when mouse is near
+                    if (dist < minDist) {
+                        const force = (minDist - dist) / minDist;
+                        const angle = Math.atan2(dy, dx);
+                        this.vx += Math.cos(angle) * force * 2;
+                        this.vy += Math.sin(angle) * force * 2;
+                    }
+
+                    // Spring back to home position
+                    const homeForce = 0.05;
+                    this.vx += (this.homeX - this.x) * homeForce;
+                    this.vy += (this.homeY - this.y) * homeForce;
+
+                    // Apply friction
+                    this.vx *= 0.85;
+                    this.vy *= 0.85;
+
+                    // Update position
+                    this.x += this.vx;
+                    this.y += this.vy;
+                }
+
+                draw() {
+                    pCtx.fillStyle = this.color;
+                    pCtx.fillRect(this.x - this.size / 2, this.y - this.size / 2, this.size, this.size);
+                }
+            }
+
+            let particles = [];
+            let mouse = { x: -1000, y: -1000 };
+
+            // Create book shapes with particles
+            function initBooks() {
+                particles = [];
+                const centerX = particleCanvas.width / 2;
+                const centerY = particleCanvas.height / 2;
+
+                // Calculate book layout to span width
+                const canvasWidth = particleCanvas.width;
+                const bookSpacing = 5;
+                const numBooks = 7;
+                const totalSpacing = bookSpacing * (numBooks - 1);
+                const availableWidth = Math.min(canvasWidth * 0.8, 700);
+                const avgBookWidth = (availableWidth - totalSpacing) / numBooks;
+
+                // Define book shapes with varied heights and widths
+                const books = [
+                    { width: avgBookWidth * 0.9, height: 65, color: '#73d0ff', spineColor: '#4a9fd5' },
+                    { width: avgBookWidth * 1.1, height: 75, color: '#bae67e', spineColor: '#89b85d' },
+                    { width: avgBookWidth * 0.85, height: 68, color: '#ffcc66', spineColor: '#d9a842' },
+                    { width: avgBookWidth * 1.15, height: 72, color: '#d4bfff', spineColor: '#a68fd9' },
+                    { width: avgBookWidth * 0.95, height: 70, color: '#ff8f40', spineColor: '#d96b1f' },
+                    { width: avgBookWidth * 1.05, height: 77, color: '#f28779', spineColor: '#c86b5e' },
+                    { width: avgBookWidth * 0.9, height: 66, color: '#73d0ff', spineColor: '#4a9fd5' }
+                ];
+
+                // Calculate starting X position
+                const totalBooksWidth = books.reduce((sum, book) => sum + book.width, 0) + totalSpacing;
+                let currentX = centerX - totalBooksWidth / 2;
+
+                // Create particles for each book
+                books.forEach((book, index) => {
+                    const spacing = 2.5;
+                    const spineWidth = 4;
+
+                    // Create book cover particles
+                    const cols = Math.ceil(book.width / spacing);
+                    const rows = Math.ceil(book.height / spacing);
+
+                    for (let row = 0; row < rows; row++) {
+                        for (let col = 0; col < cols; col++) {
+                            const x = currentX + col * spacing;
+                            const y = centerY - book.height / 2 + row * spacing;
+
+                            // Left spine (darker)
+                            if (col < spineWidth / spacing) {
+                                particles.push(new Particle(x, y, book.spineColor));
+                            } else {
+                                particles.push(new Particle(x, y, book.color));
+                            }
+                        }
+                    }
+
+                    // Add shelf base line under each book
+                    const baseY = centerY + book.height / 2 + 2;
+                    for (let col = 0; col < cols; col++) {
+                        const x = currentX + col * spacing;
+                        particles.push(new Particle(x, baseY, '#5c6773'));
+                    }
+
+                    currentX += book.width + bookSpacing;
+                });
+
+                // Add text particles for "xander's devlog"
+                addTextParticles(centerX, centerY + 50, "xander's devlog", '#d9d7ce');
+            }
+
+            // Create particles forming text
+            function addTextParticles(startX, y, text, color) {
+                pCtx.font = '14px JetBrains Mono';
+                const textWidth = pCtx.measureText(text).width;
+                const x = startX - textWidth / 2;
+
+                // Sample pixels from text
+                pCtx.fillStyle = color;
+                pCtx.fillText(text, x, y);
+
+                const imageData = pCtx.getImageData(x - 5, y - 15, textWidth + 10, 20);
+                pCtx.clearRect(0, 0, particleCanvas.width, particleCanvas.height);
+
+                const spacing = 3;
+                for (let py = 0; py < imageData.height; py += spacing) {
+                    for (let px = 0; px < imageData.width; px += spacing) {
+                        const i = (py * imageData.width + px) * 4;
+                        if (imageData.data[i + 3] > 128) {
+                            particles.push(new Particle(x + px - 5, y - 15 + py, color));
+                        }
+                    }
+                }
+            }
+
+            // Track mouse position
+            particleCanvas.addEventListener('mousemove', (e) => {
+                const rect = particleCanvas.getBoundingClientRect();
+                mouse.x = e.clientX - rect.left;
+                mouse.y = e.clientY - rect.top;
+            });
+
+            particleCanvas.addEventListener('mouseleave', () => {
+                mouse.x = -1000;
+                mouse.y = -1000;
+            });
+
+            // Animation loop
+            function animateParticles() {
+                pCtx.fillStyle = 'rgba(36, 43, 56, 0.3)';
+                pCtx.fillRect(0, 0, particleCanvas.width, particleCanvas.height);
+
+                particles.forEach(particle => {
+                    particle.update(mouse.x, mouse.y);
+                    particle.draw();
+                });
+
+                requestAnimationFrame(animateParticles);
+            }
+
+            // Initialize
+            resizeParticleCanvas();
+            window.addEventListener('resize', resizeParticleCanvas);
+            animateParticles();
+
             // Matrix rain effect
             const canvas = document.getElementById('matrixCanvas');
             const ctx = canvas.getContext('2d');
