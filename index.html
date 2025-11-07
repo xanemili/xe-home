@@ -688,32 +688,64 @@
                 const centerX = particleCanvas.width / 2;
                 const centerY = particleCanvas.height / 2;
 
-                // Define book shapes (5 books side by side)
+                // Calculate book layout to span width
+                const canvasWidth = particleCanvas.width;
+                const bookSpacing = 5;
+                const numBooks = 7;
+                const totalSpacing = bookSpacing * (numBooks - 1);
+                const availableWidth = Math.min(canvasWidth * 0.8, 700);
+                const avgBookWidth = (availableWidth - totalSpacing) / numBooks;
+
+                // Define book shapes with varied heights and widths
                 const books = [
-                    { x: -120, width: 20, height: 50, color: '#73d0ff' },
-                    { x: -70, width: 25, height: 60, color: '#bae67e' },
-                    { x: -15, width: 22, height: 55, color: '#ffcc66' },
-                    { x: 35, width: 24, height: 58, color: '#d4bfff' },
-                    { x: 90, width: 21, height: 52, color: '#ff8f40' }
+                    { width: avgBookWidth * 0.9, height: 65, color: '#73d0ff', spineColor: '#4a9fd5' },
+                    { width: avgBookWidth * 1.1, height: 75, color: '#bae67e', spineColor: '#89b85d' },
+                    { width: avgBookWidth * 0.85, height: 68, color: '#ffcc66', spineColor: '#d9a842' },
+                    { width: avgBookWidth * 1.15, height: 72, color: '#d4bfff', spineColor: '#a68fd9' },
+                    { width: avgBookWidth * 0.95, height: 70, color: '#ff8f40', spineColor: '#d96b1f' },
+                    { width: avgBookWidth * 1.05, height: 77, color: '#f28779', spineColor: '#c86b5e' },
+                    { width: avgBookWidth * 0.9, height: 66, color: '#73d0ff', spineColor: '#4a9fd5' }
                 ];
 
+                // Calculate starting X position
+                const totalBooksWidth = books.reduce((sum, book) => sum + book.width, 0) + totalSpacing;
+                let currentX = centerX - totalBooksWidth / 2;
+
                 // Create particles for each book
-                books.forEach(book => {
-                    const spacing = 3;
+                books.forEach((book, index) => {
+                    const spacing = 2.5;
+                    const spineWidth = 4;
+
+                    // Create book cover particles
                     const cols = Math.ceil(book.width / spacing);
                     const rows = Math.ceil(book.height / spacing);
 
                     for (let row = 0; row < rows; row++) {
                         for (let col = 0; col < cols; col++) {
-                            const x = centerX + book.x + col * spacing;
+                            const x = currentX + col * spacing;
                             const y = centerY - book.height / 2 + row * spacing;
-                            particles.push(new Particle(x, y, book.color));
+
+                            // Left spine (darker)
+                            if (col < spineWidth / spacing) {
+                                particles.push(new Particle(x, y, book.spineColor));
+                            } else {
+                                particles.push(new Particle(x, y, book.color));
+                            }
                         }
                     }
+
+                    // Add shelf base line under each book
+                    const baseY = centerY + book.height / 2 + 2;
+                    for (let col = 0; col < cols; col++) {
+                        const x = currentX + col * spacing;
+                        particles.push(new Particle(x, baseY, '#5c6773'));
+                    }
+
+                    currentX += book.width + bookSpacing;
                 });
 
                 // Add text particles for "xander's devlog"
-                addTextParticles(centerX, centerY + 40, "xander's devlog", '#d9d7ce');
+                addTextParticles(centerX, centerY + 50, "xander's devlog", '#d9d7ce');
             }
 
             // Create particles forming text
