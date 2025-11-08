@@ -117,7 +117,7 @@
                 white-space: pre;
                 overflow-x: auto;
                 position: relative;
-                height: 100px;
+                height: 140px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
@@ -723,8 +723,11 @@
                     currentX += book.width + bookSpacing;
                 });
 
+                // Add text particles for name
+                addTextParticles(centerX, centerY + 50, "Xander Emili", '#d9d7ce');
+
                 // Add text particles for "xander's devlog"
-                addTextParticles(centerX, centerY + 50, "xander's devlog", '#d9d7ce');
+                addTextParticles(centerX, centerY + 70, "xander's devlog", '#d9d7ce');
             }
 
             // Create particles forming text
