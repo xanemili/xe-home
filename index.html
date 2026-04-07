@@ -4,6 +4,24 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>~/xander - devlog</title>
+        <meta name="description" content="Xander Emili - Software Developer & Platform Engineer. Former investment analyst building apps and tools." />
+        <meta name="author" content="Xander Emili" />
+        <meta name="theme-color" content="#1f2430" />
+
+        <meta property="og:title" content="~/xander - devlog" />
+        <meta property="og:description" content="Xander Emili - Software Developer & Platform Engineer" />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://xanxan.me" />
+
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content="~/xander - devlog" />
+        <meta name="twitter:description" content="Xander Emili - Software Developer & Platform Engineer" />
+
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <link rel="manifest" href="/site.webmanifest" />
+        <script src="https://unpkg.com/htmx.org@2/dist/htmx.min.js"></script>
+
         <style>
             @import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap");
 
@@ -21,6 +39,22 @@
                 --text-red: #f28779;
                 --border: #3d4751;
                 --cursor: #ffcc66;
+            }
+
+            [data-theme="light"] {
+                --bg-primary: #f5f5f5;
+                --bg-secondary: #ffffff;
+                --bg-tertiary: #e8e8e8;
+                --text-primary: #333333;
+                --text-secondary: #666666;
+                --text-accent: #d4a017;
+                --text-green: #6b8f2a;
+                --text-blue: #2a7fb8;
+                --text-purple: #8b5fb8;
+                --text-orange: #cc6600;
+                --text-red: #c74d3d;
+                --border: #cccccc;
+                --cursor: #d4a017;
             }
 
             * {
@@ -96,6 +130,26 @@
                 padding: 20px;
                 margin-bottom: 20px;
                 position: relative;
+            }
+
+            .theme-toggle {
+                position: absolute;
+                top: 12px;
+                right: 12px;
+                background: var(--bg-tertiary);
+                border: 1px solid var(--border);
+                border-radius: 4px;
+                padding: 6px 10px;
+                cursor: pointer;
+                font-family: inherit;
+                font-size: 14px;
+                color: var(--text-secondary);
+                transition: all 0.3s ease;
+            }
+
+            .theme-toggle:hover {
+                border-color: var(--text-accent);
+                color: var(--text-accent);
             }
 
             .terminal-header::before {
@@ -394,7 +448,7 @@
             }
         </style>
     </head>
-    <body>
+    <body hx-boost="true">
         <div class="matrix-bg">
             <canvas id="matrixCanvas"></canvas>
         </div>
@@ -402,6 +456,9 @@
         <header>
             <div class="container">
                 <div class="terminal-header">
+                    <button class="theme-toggle" hx-on::click="toggleTheme()" aria-label="Toggle light mode">
+                        <span id="theme-icon">☀</span>
+                    </button>
                     <div class="ascii-art">
                         <canvas id="particleCanvas"></canvas>
                     </div>
@@ -482,12 +539,11 @@
                         Led development of ETL platform serving 100+ enterprise
                         customers.<br />
                         ├── <strong>side-projects/</strong><br />
-                        │ ├──
-                        <a href="https://portfolio.xanxan.me">Portfolio Optimizer</a>
+                        │ ├─ <a href="https://portfolio.xanxan.me">Portfolio Optimizer</a>
                         <br />
                         │ │ └──<span class="project-meta">Python/FastAPI - Classical finance metrics with LLM integration</span>
                         <br />
-                        │ ├ <a href="https://knead.dev"> Knead - Recipie sharing platform </a>
+                        │ ├─ <a href="https://knead.dev"> Knead - Recipie sharing platform </a>
                         <br />
                         └─└── <span class="project-meta">Svelte, Typescript, Cloudflare</span>
                     </div>
@@ -591,14 +647,40 @@
         <footer class="footer">
             <div class="container">
                 <p>
-                    © 2025 Xander Emili | Built with
+                    © 2026 Xander Emili | Built with
                     <span style="color: var(--text-red)">❤️</span> Hosted on
-                    GitHub Pages
+                    Cloudflare Pages
                 </p>
             </div>
         </footer>
 
         <script>
+            // Theme toggle
+            function toggleTheme() {
+                const html = document.documentElement;
+                const icon = document.getElementById('theme-icon');
+                const current = html.getAttribute('data-theme');
+                const next = current === 'light' ? 'dark' : 'light';
+                html.setAttribute('data-theme', next);
+                localStorage.setItem('theme', next);
+                icon.textContent = next === 'light' ? '☀' : '☾';
+            }
+
+            // Load saved theme
+            (function() {
+                const saved = localStorage.getItem('theme');
+                if (saved) {
+                    document.documentElement.setAttribute('data-theme', saved);
+                    document.getElementById('theme-icon').textContent = saved === 'light' ? '☀' : '☾';
+                }
+            })();
+
+            // Animation state
+            let isPageVisible = true;
+            document.addEventListener('visibilitychange', () => {
+                isPageVisible = document.visibilityState === 'visible';
+            });
+
             // Book Particle Effect
             const particleCanvas = document.getElementById('particleCanvas');
             const pCtx = particleCanvas.getContext('2d');
@@ -765,6 +847,11 @@
 
             // Animation loop
             function animateParticles() {
+                if (!isPageVisible) {
+                    requestAnimationFrame(animateParticles);
+                    return;
+                }
+
                 pCtx.fillStyle = 'rgba(36, 43, 56, 0.3)';
                 pCtx.fillRect(0, 0, particleCanvas.width, particleCanvas.height);
 
@@ -806,6 +893,8 @@
 
             // Draw function
             function draw() {
+                if (!isPageVisible) return;
+
                 // Semi-transparent black to create fade effect
                 ctx.fillStyle = 'rgba(31, 36, 48, 0.05)';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -833,7 +922,21 @@
             }
 
             // Animation loop
-            setInterval(draw, 33); // ~30fps
+            let matrixInterval;
+            function startMatrix() {
+                clearInterval(matrixInterval);
+                matrixInterval = setInterval(draw, 33);
+            }
+            startMatrix();
+
+            // Handle visibility changes
+            document.addEventListener('visibilitychange', () => {
+                if (document.visibilityState === 'visible') {
+                    startMatrix();
+                } else {
+                    clearInterval(matrixInterval);
+                }
+            });
 
             // Handle resize - reset drops array
             window.addEventListener('resize', () => {
