@@ -4,18 +4,27 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>~/xander - devlog</title>
-        <meta name="description" content="Xander Emili - Software Developer & Platform Engineer. Former investment analyst building apps and tools." />
+        <meta
+            name="description"
+            content="Xander Emili - Software Developer & Platform Engineer. Former investment analyst building apps and tools."
+        />
         <meta name="author" content="Xander Emili" />
         <meta name="theme-color" content="#1f2430" />
 
         <meta property="og:title" content="~/xander - devlog" />
-        <meta property="og:description" content="Xander Emili - Software Developer & Platform Engineer" />
+        <meta
+            property="og:description"
+            content="Xander Emili - Software Developer & Platform Engineer"
+        />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://xanxan.me" />
 
         <meta name="twitter:card" content="summary" />
         <meta name="twitter:title" content="~/xander - devlog" />
-        <meta name="twitter:description" content="Xander Emili - Software Developer & Platform Engineer" />
+        <meta
+            name="twitter:description"
+            content="Xander Emili - Software Developer & Platform Engineer"
+        />
 
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
@@ -132,35 +141,6 @@
                 position: relative;
             }
 
-            .theme-toggle {
-                position: absolute;
-                top: 12px;
-                right: 12px;
-                background: var(--bg-tertiary);
-                border: 1px solid var(--border);
-                border-radius: 4px;
-                padding: 6px 10px;
-                cursor: pointer;
-                font-family: inherit;
-                font-size: 14px;
-                color: var(--text-secondary);
-                transition: all 0.3s ease;
-            }
-
-            .theme-toggle:hover {
-                border-color: var(--text-accent);
-                color: var(--text-accent);
-            }
-
-            .terminal-header::before {
-                content: "● ● ●";
-                position: absolute;
-                top: 8px;
-                left: 12px;
-                color: var(--text-secondary);
-                font-size: 12px;
-            }
-
             .ascii-art {
                 color: var(--text-green);
                 font-size: 12px;
@@ -267,7 +247,26 @@
             .project-meta {
                 color: var(--text-secondary);
                 font-size: 0.9em;
-                margin-left: 20px;
+            }
+
+            .tree-children {
+                border-left: 1px solid var(--border);
+                margin-left: 6px;
+            }
+
+            .tree-leaf {
+                padding: 4px 0 4px 16px;
+                position: relative;
+            }
+
+            .tree-leaf::before {
+                content: "";
+                position: absolute;
+                left: 0;
+                top: 13px;
+                width: 12px;
+                height: 1px;
+                background: var(--border);
             }
 
             .skill-grid {
@@ -456,9 +455,6 @@
         <header>
             <div class="container">
                 <div class="terminal-header">
-                    <button class="theme-toggle" hx-on::click="toggleTheme()" aria-label="Toggle light mode">
-                        <span id="theme-icon">☀</span>
-                    </button>
                     <div class="ascii-art">
                         <canvas id="particleCanvas"></canvas>
                     </div>
@@ -486,9 +482,45 @@
                                 class="social-link"
                                 >./email</a
                             >
-                            <a href="resume.html" class="social-link"
-                                >./resume.html</a
+                            <a
+                                href="#"
+                                onclick="
+                                    downloadBlob(
+                                        'resume.html',
+                                        'Alexander_Emili_Resume.html',
+                                    );
+                                    return false;
+                                "
+                                class="social-link"
                             >
+                                ./resume.html
+                            </a>
+                            <a
+                                href="#"
+                                onclick="
+                                    downloadBlob(
+                                        'resume.md',
+                                        'Alexander_Emili_Resume.md',
+                                    );
+                                    return false;
+                                "
+                                class="social-link"
+                            >
+                                ./resume.md
+                            </a>
+                            <a
+                                href="#"
+                                onclick="
+                                    downloadBlob(
+                                        'resume.pdf',
+                                        'Alexander_Emili_Resume.pdf',
+                                    );
+                                    return false;
+                                "
+                                class="social-link"
+                            >
+                                ./resume.pdf
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -519,33 +551,69 @@
                     </p>
                 </section>
 
-                <section class="section" data-title="CURRENT_WORK">
-                    <h2>tree ./current-work/</h2>
+                <section class="section" data-title="EXPERIENCE">
+                    <h2>tree ./experience/</h2>
                     <div class="tree-structure">
-                        ├── <strong>primary-role/</strong><br />
-                        │ ├──
-                        <span style="color: var(--text-blue)">company:</span>
-                        Sandbox Banking<br />
-                        │ ├──
-                        <span style="color: var(--text-blue)">position:</span>
-                        Platform Engineer<br />
-                        │ ├──
-                        <span style="color: var(--text-blue)">duration:</span>
-                        2022 - 2025<br />
-                        │ └──
-                        <span style="color: var(--text-blue)"
-                            >description:</span
-                        >
-                        Led development of ETL platform serving 100+ enterprise
-                        customers.<br />
-                        ├── <strong>side-projects/</strong><br />
-                        │ ├─ <a href="https://portfolio.xanxan.me">Portfolio Optimizer</a>
-                        <br />
-                        │ │ └──<span class="project-meta">Python/FastAPI - Classical finance metrics with LLM integration</span>
-                        <br />
-                        │ ├─ <a href="https://knead.dev"> Knead - Recipie sharing platform </a>
-                        <br />
-                        └─└── <span class="project-meta">Svelte, Typescript, Cloudflare</span>
+                        <div class="tree-children">
+                            <div class="tree-leaf">
+                                <strong>primary-role/</strong>
+                                <div class="tree-children">
+                                    <div class="tree-leaf">
+                                        <span style="color: var(--text-blue)">
+                                            company:
+                                        </span>
+                                        Sandbox Banking
+                                    </div>
+                                    <div class="tree-leaf">
+                                        <span style="color: var(--text-blue)">
+                                            position:
+                                        </span>
+                                        Platform Engineer
+                                    </div>
+                                    <div class="tree-leaf">
+                                        <span style="color: var(--text-blue)">
+                                            duration:
+                                        </span>
+                                        2022 - 2025
+                                    </div>
+                                    <div class="tree-leaf">
+                                        <span style="color: var(--text-blue)">
+                                            description:
+                                        </span>
+                                        Led development of ETL platform serving
+                                        100+ enterprise customers.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tree-leaf">
+                                <strong>side-projects/</strong>
+                                <div class="tree-children">
+                                    <div class="tree-leaf">
+                                        <a
+                                            href="https://slaythespirestats.xanxan.me"
+                                        >
+                                            Slay the Spire Run Statistics
+                                        </a>
+                                        <div class="tree-children">
+                                            <div class="tree-leaf project-meta">
+                                                React, Typescript, Cloudflare,
+                                                SQLite
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="tree-leaf">
+                                        <p>Knead - Recipe sharing platform</p>
+                                        <div class="tree-children">
+                                            <div class="tree-leaf project-meta">
+                                                Svelte, Typescript, Cloudflare,
+                                                Postgres
+                                            </div>
+                                            <div>TBA</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </section>
 
@@ -559,7 +627,6 @@
                                 <li>JavaScript</li>
                                 <li>Python</li>
                                 <li>Go</li>
-                                <li>SQL</li>
                             </ul>
                         </div>
 
@@ -568,9 +635,8 @@
                             <ul class="skill-list">
                                 <li>Vue.js</li>
                                 <li>React/Next.js</li>
-                                <li>Node.js</li>
-                                <li>Django</li>
-                                <li>FastAPI</li>
+                                <li>Svelte</li>
+                                <li>Django/FastAPI</li>
                             </ul>
                         </div>
 
@@ -578,8 +644,9 @@
                             <h4>cloud tools</h4>
                             <ul class="skill-list">
                                 <li>Docker</li>
-                                <li>AWS/EC2/RDS/S3</li>
+                                <li>AWS - EC2/RDS/S3</li>
                                 <li>GitHub Actions</li>
+                                <li>Cloudflare</li>
                             </ul>
                         </div>
 
@@ -646,46 +713,36 @@
 
         <footer class="footer">
             <div class="container">
-                <p>
-                    © 2026 Xander Emili | Hosted on Cloudflare Pages
-                </p>
+                <p>© 2026 Xander Emili | Hosted on Cloudflare Pages</p>
             </div>
         </footer>
 
         <script>
-            // Theme toggle
-            function toggleTheme() {
-                const html = document.documentElement;
-                const icon = document.getElementById('theme-icon');
-                const current = html.getAttribute('data-theme');
-                const next = current === 'light' ? 'dark' : 'light';
-                html.setAttribute('data-theme', next);
-                localStorage.setItem('theme', next);
-                icon.textContent = next === 'light' ? '☀' : '☾';
+            async function downloadBlob(url, filename) {
+                const res = await fetch(url);
+                const blob = await res.blob();
+                const blobUrl = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = blobUrl;
+                a.download = filename;
+                a.click();
+                URL.revokeObjectURL(blobUrl);
             }
-
-            // Load saved theme
-            (function() {
-                const saved = localStorage.getItem('theme');
-                if (saved) {
-                    document.documentElement.setAttribute('data-theme', saved);
-                    document.getElementById('theme-icon').textContent = saved === 'light' ? '☀' : '☾';
-                }
-            })();
 
             // Animation state
             let isPageVisible = true;
-            document.addEventListener('visibilitychange', () => {
-                isPageVisible = document.visibilityState === 'visible';
+            document.addEventListener("visibilitychange", () => {
+                isPageVisible = document.visibilityState === "visible";
             });
 
             // Book Particle Effect
-            const particleCanvas = document.getElementById('particleCanvas');
-            const pCtx = particleCanvas.getContext('2d');
+            const particleCanvas = document.getElementById("particleCanvas");
+            const pCtx = particleCanvas.getContext("2d");
 
             // Set canvas size
             function resizeParticleCanvas() {
-                const rect = particleCanvas.parentElement.getBoundingClientRect();
+                const rect =
+                    particleCanvas.parentElement.getBoundingClientRect();
                 particleCanvas.width = rect.width;
                 particleCanvas.height = rect.height;
                 initBooks();
@@ -734,7 +791,12 @@
 
                 draw() {
                     pCtx.fillStyle = this.color;
-                    pCtx.fillRect(this.x - this.size / 2, this.y - this.size / 2, this.size, this.size);
+                    pCtx.fillRect(
+                        this.x - this.size / 2,
+                        this.y - this.size / 2,
+                        this.size,
+                        this.size,
+                    );
                 }
             }
 
@@ -757,17 +819,54 @@
 
                 // Define book shapes with varied heights and widths
                 const books = [
-                    { width: avgBookWidth * 0.9, height: 65, color: '#73d0ff', spineColor: '#4a9fd5' },
-                    { width: avgBookWidth * 1.1, height: 75, color: '#bae67e', spineColor: '#89b85d' },
-                    { width: avgBookWidth * 0.85, height: 68, color: '#ffcc66', spineColor: '#d9a842' },
-                    { width: avgBookWidth * 1.15, height: 72, color: '#d4bfff', spineColor: '#a68fd9' },
-                    { width: avgBookWidth * 0.95, height: 70, color: '#ff8f40', spineColor: '#d96b1f' },
-                    { width: avgBookWidth * 1.05, height: 77, color: '#f28779', spineColor: '#c86b5e' },
-                    { width: avgBookWidth * 0.9, height: 66, color: '#73d0ff', spineColor: '#4a9fd5' }
+                    {
+                        width: avgBookWidth * 0.9,
+                        height: 65,
+                        color: "#73d0ff",
+                        spineColor: "#4a9fd5",
+                    },
+                    {
+                        width: avgBookWidth * 1.1,
+                        height: 75,
+                        color: "#bae67e",
+                        spineColor: "#89b85d",
+                    },
+                    {
+                        width: avgBookWidth * 0.85,
+                        height: 68,
+                        color: "#ffcc66",
+                        spineColor: "#d9a842",
+                    },
+                    {
+                        width: avgBookWidth * 1.15,
+                        height: 72,
+                        color: "#d4bfff",
+                        spineColor: "#a68fd9",
+                    },
+                    {
+                        width: avgBookWidth * 0.95,
+                        height: 70,
+                        color: "#ff8f40",
+                        spineColor: "#d96b1f",
+                    },
+                    {
+                        width: avgBookWidth * 1.05,
+                        height: 77,
+                        color: "#f28779",
+                        spineColor: "#c86b5e",
+                    },
+                    {
+                        width: avgBookWidth * 0.9,
+                        height: 66,
+                        color: "#73d0ff",
+                        spineColor: "#4a9fd5",
+                    },
                 ];
 
                 // Calculate starting X position
-                const totalBooksWidth = books.reduce((sum, book) => sum + book.width, 0) + totalSpacing;
+                const totalBooksWidth =
+                    books.reduce((sum, book) => sum + book.width, 0) +
+                    totalSpacing;
                 let currentX = centerX - totalBooksWidth / 2;
 
                 // Create particles for each book
@@ -786,7 +885,9 @@
 
                             // Left spine (darker)
                             if (col < spineWidth / spacing) {
-                                particles.push(new Particle(x, y, book.spineColor));
+                                particles.push(
+                                    new Particle(x, y, book.spineColor),
+                                );
                             } else {
                                 particles.push(new Particle(x, y, book.color));
                             }
@@ -797,19 +898,24 @@
                     const baseY = centerY + book.height / 2 + 2;
                     for (let col = 0; col < cols; col++) {
                         const x = currentX + col * spacing;
-                        particles.push(new Particle(x, baseY, '#5c6773'));
+                        particles.push(new Particle(x, baseY, "#5c6773"));
                     }
 
                     currentX += book.width + bookSpacing;
                 });
 
                 // Add text particles for "xander's devlog"
-                addTextParticles(centerX, centerY + 50, "xander's devlog", '#d9d7ce');
+                addTextParticles(
+                    centerX,
+                    centerY + 50,
+                    "xander's devlog",
+                    "#d9d7ce",
+                );
             }
 
             // Create particles forming text
             function addTextParticles(startX, y, text, color) {
-                pCtx.font = '14px JetBrains Mono';
+                pCtx.font = "14px JetBrains Mono";
                 const textWidth = pCtx.measureText(text).width;
                 const x = startX - textWidth / 2;
 
@@ -817,28 +923,40 @@
                 pCtx.fillStyle = color;
                 pCtx.fillText(text, x, y);
 
-                const imageData = pCtx.getImageData(x - 5, y - 15, textWidth + 10, 20);
-                pCtx.clearRect(0, 0, particleCanvas.width, particleCanvas.height);
+                const imageData = pCtx.getImageData(
+                    x - 5,
+                    y - 15,
+                    textWidth + 10,
+                    20,
+                );
+                pCtx.clearRect(
+                    0,
+                    0,
+                    particleCanvas.width,
+                    particleCanvas.height,
+                );
 
                 const spacing = 3;
                 for (let py = 0; py < imageData.height; py += spacing) {
                     for (let px = 0; px < imageData.width; px += spacing) {
                         const i = (py * imageData.width + px) * 4;
                         if (imageData.data[i + 3] > 128) {
-                            particles.push(new Particle(x + px - 5, y - 15 + py, color));
+                            particles.push(
+                                new Particle(x + px - 5, y - 15 + py, color),
+                            );
                         }
                     }
                 }
             }
 
             // Track mouse position
-            particleCanvas.addEventListener('mousemove', (e) => {
+            particleCanvas.addEventListener("mousemove", (e) => {
                 const rect = particleCanvas.getBoundingClientRect();
                 mouse.x = e.clientX - rect.left;
                 mouse.y = e.clientY - rect.top;
             });
 
-            particleCanvas.addEventListener('mouseleave', () => {
+            particleCanvas.addEventListener("mouseleave", () => {
                 mouse.x = -1000;
                 mouse.y = -1000;
             });
@@ -850,10 +968,15 @@
                     return;
                 }
 
-                pCtx.fillStyle = 'rgba(36, 43, 56, 0.3)';
-                pCtx.fillRect(0, 0, particleCanvas.width, particleCanvas.height);
+                pCtx.fillStyle = "rgba(36, 43, 56, 0.3)";
+                pCtx.fillRect(
+                    0,
+                    0,
+                    particleCanvas.width,
+                    particleCanvas.height,
+                );
 
-                particles.forEach(particle => {
+                particles.forEach((particle) => {
                     particle.update(mouse.x, mouse.y);
                     particle.draw();
                 });
@@ -863,12 +986,12 @@
 
             // Initialize
             resizeParticleCanvas();
-            window.addEventListener('resize', resizeParticleCanvas);
+            window.addEventListener("resize", resizeParticleCanvas);
             animateParticles();
 
             // Matrix rain effect
-            const canvas = document.getElementById('matrixCanvas');
-            const ctx = canvas.getContext('2d');
+            const canvas = document.getElementById("matrixCanvas");
+            const ctx = canvas.getContext("2d");
 
             // Set canvas size
             function resizeCanvas() {
@@ -876,10 +999,11 @@
                 canvas.height = window.innerHeight;
             }
             resizeCanvas();
-            window.addEventListener('resize', resizeCanvas);
+            window.addEventListener("resize", resizeCanvas);
 
             // Matrix characters - mix of letters, numbers, and symbols
-            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%^&*()_+-=[]{}|;:,.<>?/~`';
+            const chars =
+                "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%^&*()_+-=[]{}|;:,.<>?/~`";
             const fontSize = 14;
             const columns = canvas.width / fontSize;
 
@@ -894,23 +1018,28 @@
                 if (!isPageVisible) return;
 
                 // Semi-transparent black to create fade effect
-                ctx.fillStyle = 'rgba(31, 36, 48, 0.05)';
+                ctx.fillStyle = "rgba(31, 36, 48, 0.05)";
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
                 // Set text color to the blue accent color
-                ctx.fillStyle = '#73d0ff';
-                ctx.font = fontSize + 'px JetBrains Mono, monospace';
+                ctx.fillStyle = "#73d0ff";
+                ctx.font = fontSize + "px JetBrains Mono, monospace";
 
                 // Loop through drops
                 for (let i = 0; i < drops.length; i++) {
                     // Random character
-                    const text = chars.charAt(Math.floor(Math.random() * chars.length));
+                    const text = chars.charAt(
+                        Math.floor(Math.random() * chars.length),
+                    );
 
                     // Draw character
                     ctx.fillText(text, i * fontSize, drops[i] * fontSize);
 
                     // Reset drop to top randomly after it crosses the screen
-                    if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    if (
+                        drops[i] * fontSize > canvas.height &&
+                        Math.random() > 0.975
+                    ) {
                         drops[i] = 0;
                     }
 
@@ -928,8 +1057,8 @@
             startMatrix();
 
             // Handle visibility changes
-            document.addEventListener('visibilitychange', () => {
-                if (document.visibilityState === 'visible') {
+            document.addEventListener("visibilitychange", () => {
+                if (document.visibilityState === "visible") {
                     startMatrix();
                 } else {
                     clearInterval(matrixInterval);
@@ -937,7 +1066,7 @@
             });
 
             // Handle resize - reset drops array
-            window.addEventListener('resize', () => {
+            window.addEventListener("resize", () => {
                 const newColumns = canvas.width / fontSize;
                 drops.length = 0;
                 for (let i = 0; i < newColumns; i++) {

@@ -1,7 +1,8 @@
 {
   "type": "module",
   "scripts": {
-    "build": "rm -rf public && mkdir -p public/src && cp index.html resume.html favicon.ico robots.txt sitemap.xml public/ && cp src/favicon.svg src/apple-touch-icon.png src/favicon-96x96.png src/site.webmanifest src/web-app-manifest-192x192.png src/web-app-manifest-512x512.png public/ && cp src/resume-converter.js public/src/",
+    "build": "bash scripts/build.sh",
+    "dev": "npm run build && wrangler pages dev public/",
     "deploy": "npm run build && wrangler pages deploy",
     "compile": "tsc",
     "compile:watch": "tsc --watch",

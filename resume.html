@@ -3,8 +3,7 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Alexander Emili - Software Engineer</title>
-        <script src="https://unpkg.com/htmx.org@2/dist/htmx.min.js"></script>
+        <title>Xander Emili - Software Engineer</title>
         <style>
             * {
                 margin: 0;
@@ -209,45 +208,6 @@
                 font-size: 0.9rem;
             }
 
-            .actions {
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                display: flex;
-                gap: 10px;
-                z-index: 1000;
-            }
-
-            .btn {
-                padding: 8px 16px;
-                border: none;
-                border-radius: 4px;
-                cursor: pointer;
-                font-size: 14px;
-                font-weight: 500;
-                transition: all 0.3s ease;
-                text-decoration: none;
-                display: inline-block;
-            }
-
-            .btn-primary {
-                background-color: #007bff;
-                color: white;
-            }
-
-            .btn-primary:hover {
-                background-color: #0056b3;
-            }
-
-            .btn-secondary {
-                background-color: #6c757d;
-                color: white;
-            }
-
-            .btn-secondary:hover {
-                background-color: #545b62;
-            }
-
             @media (max-width: 768px) {
                 .resume-container {
                     padding: 20px;
@@ -267,12 +227,6 @@
                     flex-direction: column;
                     gap: 5px;
                 }
-
-                .actions {
-                    position: static;
-                    justify-content: center;
-                    margin-bottom: 20px;
-                }
             }
 
             @media print {
@@ -287,39 +241,28 @@
                     padding: 20px;
                 }
 
-                .actions {
-                    display: none;
-                }
             }
         </style>
     </head>
-    <body hx-boost="true">
-        <div class="actions">
-            <button class="btn btn-primary" hx-on::click="convertToMarkdown()">
-                Export Markdown
-            </button>
-            <button class="btn btn-secondary" hx-on::click="downloadPDF()">
-                Download PDF
-            </button>
-        </div>
-
+    <body>
         <div class="resume-container" id="resume-content">
             <header class="header">
                 <h1>Alexander Emili</h1>
                 <div class="title">Software Engineer</div>
                 <div class="contact-info">
                     <a href="mailto:xanemili@proton.me">xanemili@proton.me</a>
-                    <a href="https://xanemili.github.io" target="_blank"
-                        >Personal Website</a
-                    >
+                    <a href="https://xanemili.github.io" target="_blank">
+                        Personal Website
+                    </a>
                     <a
                         href="https://www.linkedin.com/in/xemili/"
                         target="_blank"
-                        >LinkedIn</a
                     >
-                    <a href="https://github.com/xanemili" target="_blank"
-                        >GitHub</a
-                    >
+                        LinkedIn
+                    </a>
+                    <a href="https://github.com/xanemili" target="_blank">
+                        GitHub
+                    </a>
                 </div>
             </header>
 
@@ -492,26 +435,15 @@
                 <h2 class="section-title">Personal Projects</h2>
 
                 <div class="project">
-                    <div class="project-title">Stock Tracker</div>
-                    <div class="tech-stack">
-                        React, Express, Sequelize, Node-Cron, WebSocket
-                    </div>
+                    <div class="project-title">Slay the Spire Statistics</div>
+                    <div class="tech-stack">Typescript, React, SQLite</div>
                     <ul>
                         <li>
-                            Built real-time stock tracking system processing 1M+
-                            data points daily from multiple financial APIs
-                        </li>
-                        <li>
-                            Implemented WebSocket connections for live price
-                            updates and push notifications to 500+ users
-                        </li>
-                        <li>
-                            Designed automated rebalancing algorithm achieving
-                            15% better returns than benchmark indices
+                            Developed a web app for analyzing Slay the Spire
+                            deck statistics and runs
                         </li>
                     </ul>
                 </div>
-
                 <div class="project">
                     <div class="project-title">Portfolio Optimizer</div>
                     <div class="tech-stack">
@@ -558,6 +490,5 @@
             </section>
         </div>
 
-        <script src="./src/resume-converter.js"></script>
     </body>
 </html>

@@ -39,18 +39,13 @@
 
 ## PERSONAL PROJECTS
 
-### **Portfolio Optimizer** *(Python, FastAPI, OpenAI API)*
-- Built comprehensive portfolio analysis tool calculating Sharpe ratio, VaR, and Monte Carlo simulations
-- Integrated GPT-4 API to generate natural language explanations of risk metrics and investment recommendations
-- Processed historical data for 5,000+ stocks to identify correlation patterns and diversification opportunities
+### **Slay the Spire Stats** (Typescript, SQLite)
+- Combined statistics for slay the spire runs
+- Ability to compare card usage against other players
 
-### **Stock Tracker** *(React, Express, WebSocket, Node-Cron)*
-- Built real-time stock tracking system processing 1M+ data points daily from multiple financial APIs
-- Implemented WebSocket connections for live price updates and push notifications to 500+ users
-- Designed automated rebalancing algorithm achieving 15% better returns than benchmark indices
-
-### **Recipe Share** *(Svelte)
-- Scraped online recipes for conversion to markdown
+### **Knead** (Svelte)
+- Scraping online recipes for conversion to markdown
+- Social features for recipe sharing and recipe books
 
 ## CERTIFICATIONS
 **CFA Level III Exam** - Passed June 2021

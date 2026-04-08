@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://xanxan.me/sitemap.xml
+Sitemap: https://work.xanxan.me/sitemap.xml
