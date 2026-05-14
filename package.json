@@ -5,22 +5,17 @@
     "dev": "npm run build && wrangler pages dev public/",
     "deploy": "npm run build && wrangler pages deploy",
     "compile": "tsc",
-    "compile:watch": "tsc --watch",
-    "convert-resume": "node src/resume-converter.js"
+    "compile:watch": "tsc --watch"
   },
   "dependencies": {
     "@types/bun": "^1.3.1",
     "htmx.org": "^2.0.8",
     "http-server": "^14.1.1",
-    "jsdom": "^29.0.1",
-    "pdfkit": "^0.15.2",
     "typescript": "^5.8.3"
   },
   "packageManager": "npm@10.8.2+sha512.c7f0088c520a46596b85c6f8f1da943400199748a0f7ea8cb8df75469668dc26f6fb3ba26df87e2884a5ebe91557292d0f3db7d0929cdb4f14910c3032ac81fb",
   "devDependencies": {
-    "@types/jsdom": "^21.1.7",
     "@types/node": "^24.0.14",
-    "@types/pdfkit": "^0.13.7",
     "wrangler": "^4.90.0"
   }
 }
