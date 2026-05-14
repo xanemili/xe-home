@@ -3,1073 +3,1037 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>~/xander - devlog</title>
-        <meta
-            name="description"
-            content="Xander Emili - Software Developer & Platform Engineer. Former investment analyst building apps and tools."
-        />
-        <meta name="author" content="Xander Emili" />
-        <meta name="theme-color" content="#1f2430" />
-
-        <meta property="og:title" content="~/xander - devlog" />
-        <meta
-            property="og:description"
-            content="Xander Emili - Software Developer & Platform Engineer"
-        />
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://xanxan.me" />
-
-        <meta name="twitter:card" content="summary" />
-        <meta name="twitter:title" content="~/xander - devlog" />
-        <meta
-            name="twitter:description"
-            content="Xander Emili - Software Developer & Platform Engineer"
-        />
-
+        <title>~/xander</title>
+        <meta name="description" content="Xander Emili — Platform Engineer" />
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <link rel="manifest" href="/site.webmanifest" />
-        <script src="https://unpkg.com/htmx.org@2/dist/htmx.min.js"></script>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&display=swap"
+            rel="stylesheet"
+        />
 
         <style>
-            @import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap");
-
-            :root {
-                --bg-primary: #1f2430;
-                --bg-secondary: #242b38;
-                --bg-tertiary: #343e4c;
-                --text-primary: #d9d7ce;
-                --text-secondary: #5c6773;
-                --text-accent: #ffcc66;
-                --text-green: #bae67e;
-                --text-blue: #73d0ff;
-                --text-purple: #d4bfff;
-                --text-orange: #ff8f40;
-                --text-red: #f28779;
-                --border: #3d4751;
-                --cursor: #ffcc66;
-            }
-
-            [data-theme="light"] {
-                --bg-primary: #f5f5f5;
-                --bg-secondary: #ffffff;
-                --bg-tertiary: #e8e8e8;
-                --text-primary: #333333;
-                --text-secondary: #666666;
-                --text-accent: #d4a017;
-                --text-green: #6b8f2a;
-                --text-blue: #2a7fb8;
-                --text-purple: #8b5fb8;
-                --text-orange: #cc6600;
-                --text-red: #c74d3d;
-                --border: #cccccc;
-                --cursor: #d4a017;
-            }
-
             * {
                 margin: 0;
                 padding: 0;
                 box-sizing: border-box;
             }
 
+            :root {
+                --bg: #181824;
+                --node-bg: #1f2430;
+                --node-border: #343e4c;
+                --node-header-bg: #242b38;
+                --text: #d9d7ce;
+                --muted: #5c6773;
+                --accent: #73d0ff;
+                --warm: #ffcc66;
+                --green: #bae67e;
+                --purple: #d4bfff;
+                --orange: #ff8f40;
+                --mono: "JetBrains Mono", monospace;
+            }
+
+            html,
             body {
-                font-family: "JetBrains Mono", monospace;
-                background-color: var(--bg-primary);
-                color: var(--text-primary);
-                line-height: 1.6;
-                overflow-x: hidden;
+                width: 100%;
+                height: 100%;
+                overflow: hidden;
+                background: var(--bg);
+                font-family: var(--mono);
             }
 
-            .container {
-                max-width: 1200px;
-                margin: 0 auto;
-                padding: 0 20px;
+            #canvas-root {
+                position: relative;
+                width: 100%;
+                height: 100%;
+                overflow: hidden;
+                cursor: default;
             }
 
-            /* Terminal-style blinking cursor */
-            .cursor::after {
-                content: "█";
-                color: var(--cursor);
-                animation: blink 1s infinite;
+            #grid-canvas {
+                position: absolute;
+                inset: 0;
+                pointer-events: none;
             }
 
-            @keyframes blink {
-                0%,
-                50% {
-                    opacity: 1;
-                }
-                51%,
-                100% {
-                    opacity: 0;
-                }
-            }
-
-            /* Matrix-style background effect */
-            .matrix-bg {
-                position: fixed;
+            #world {
+                position: absolute;
                 top: 0;
                 left: 0;
-                width: 100%;
-                height: 100%;
-                pointer-events: none;
-                z-index: -1;
-                opacity: 0.15;
+                width: 0;
+                height: 0;
+                transform-origin: 0 0;
             }
 
-            #matrixCanvas {
-                display: block;
-                width: 100%;
-                height: 100%;
+            /* ── Nodes ──────────────────────────────────────────────── */
+
+            .node {
+                position: absolute;
+                width: 290px;
+                background: var(--node-bg);
+                border: 1px solid var(--node-border);
+                border-radius: 6px;
+                color: var(--text);
+                font-size: 12.5px;
+                box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
+                will-change: transform;
+                transition: border-color 0.15s;
             }
 
-            header {
-                padding: 40px 0;
-                border-bottom: 2px solid var(--border);
-                background: transparent;
+            .node:hover {
+                border-color: #4a5568;
             }
 
-            .terminal-header {
-                background: var(--bg-secondary);
-                border: 1px solid var(--border);
-                border-radius: 8px;
-                padding: 20px;
-                margin-bottom: 20px;
-                position: relative;
-                backdrop-filter: blur(10px);
-            }
-
-            .ascii-art {
-                color: var(--text-green);
-                font-size: 12px;
-                line-height: 1.2;
-                margin-bottom: 20px;
-                text-align: center;
-                font-family: "JetBrains Mono", "Courier New", monospace;
-                white-space: pre;
-                overflow-x: auto;
-                position: relative;
-                height: 100px;
+            .node-header {
                 display: flex;
                 align-items: center;
-                justify-content: center;
+                gap: 8px;
+                padding: 8px 12px;
+                background: var(--node-header-bg);
+                border-radius: 6px 6px 0 0;
+                border-bottom: 1px solid var(--node-border);
+                cursor: grab;
+                user-select: none;
             }
 
-            #particleCanvas {
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                cursor: crosshair;
+            .node.closed .node-header {
+                border-bottom: none;
+                border-radius: 6px;
             }
 
-            .prompt {
-                color: var(--text-blue);
-                font-weight: 600;
+            .node-header:active {
+                cursor: grabbing;
             }
 
-            .command {
-                color: var(--text-accent);
+            .node-pip {
+                width: 6px;
+                height: 6px;
+                border-radius: 50%;
+                background: var(--accent);
+                flex-shrink: 0;
+                opacity: 0.7;
             }
 
-            .output {
-                color: var(--text-primary);
-                margin-left: 20px;
+            .node-title {
+                flex: 1;
+                font-size: 12px;
+                font-weight: 500;
+                color: var(--accent);
+                letter-spacing: 0.02em;
             }
 
-            .section {
-                background: var(--bg-secondary);
-                border: 1px solid var(--border);
-                border-radius: 8px;
-                margin: 30px 0;
-                padding: 30px;
-                position: relative;
+            .node-btn {
+                background: none;
+                border: none;
+                color: var(--muted);
+                cursor: pointer;
+                font: 15px/1 var(--mono);
+                width: 20px;
+                height: 20px;
+                display: grid;
+                place-items: center;
+                border-radius: 3px;
+                transition:
+                    color 0.1s,
+                    background 0.1s;
             }
 
-            .section::before {
-                content: attr(data-title);
-                position: absolute;
-                top: -12px;
-                left: 20px;
-                background: var(--bg-primary);
-                color: var(--text-accent);
-                padding: 0 10px;
-                font-size: 14px;
-                font-weight: 600;
-                text-transform: uppercase;
+            .node-btn:hover {
+                color: var(--text);
+                background: rgba(255, 255, 255, 0.07);
             }
 
-            .section h2 {
-                color: var(--text-green);
-                margin-bottom: 20px;
-                font-size: 1.5em;
-                font-weight: 600;
+            .node-body {
+                overflow: hidden;
+                max-height: 800px;
+                transition: max-height 0.2s ease;
             }
 
-            .section h2::before {
-                content: "$ ";
-                color: var(--text-blue);
+            .node.closed .node-body {
+                max-height: 0;
             }
 
-            .tree-structure {
-                font-family: "JetBrains Mono", monospace;
-                color: var(--text-primary);
-                line-height: 1.8;
+            .node-body-inner {
+                padding: 13px 14px;
+                line-height: 1.75;
             }
 
-            .tree-structure a {
-                color: var(--text-blue);
+            .node-body a {
+                color: var(--warm);
                 text-decoration: none;
-                transition: color 0.3s ease;
             }
 
-            .tree-structure a:hover {
-                color: var(--text-accent);
+            .node-body a:hover {
                 text-decoration: underline;
             }
 
-            .tree-item {
-                margin: 8px 0;
-                padding: 8px 0;
-                border-left: 2px solid transparent;
-                padding-left: 15px;
-                transition: all 0.3s ease;
+            .node-body p {
+                margin-bottom: 8px;
             }
 
-            .tree-item:hover {
-                border-left-color: var(--text-accent);
-                background: rgba(255, 204, 102, 0.05);
+            .node-body p:last-child {
+                margin-bottom: 0;
             }
 
-            .project-meta {
-                color: var(--text-secondary);
-                font-size: 0.9em;
+            .node-body .dim {
+                color: var(--muted);
+                font-size: 11.5px;
             }
 
-            .tree-children {
-                border-left: 1px solid var(--border);
-                margin-left: 6px;
+            .more-btn {
+                background: none;
+                border: none;
+                color: var(--warm);
+                cursor: pointer;
+                font-family: var(--mono);
+                font-size: inherit;
+                padding: 0;
             }
 
-            .tree-leaf {
-                padding: 4px 0 4px 16px;
-                position: relative;
+            .more-btn:hover {
+                text-decoration: underline;
             }
 
-            .tree-leaf::before {
-                content: "";
-                position: absolute;
-                left: 0;
-                top: 13px;
-                width: 12px;
-                height: 1px;
-                background: var(--border);
+            .more-content {
+                overflow: hidden;
+                max-height: 0;
+                transition: max-height 0.2s ease;
             }
 
-            .skill-grid {
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-                gap: 15px;
-                margin-top: 20px;
+            .more-content.open {
+                max-height: 200px;
             }
 
-            .skill-category {
-                background: var(--bg-tertiary);
-                border: 1px solid var(--border);
-                border-radius: 6px;
-                padding: 20px;
-                position: relative;
-            }
-
-            .skill-category h4 {
-                color: var(--text-purple);
-                margin-bottom: 15px;
-                font-size: 1em;
-                font-weight: 600;
-            }
-
-            .skill-category h4::before {
-                content: "> ";
-                color: var(--text-orange);
-            }
-
-            .skill-list {
+            .node-body ul {
                 list-style: none;
             }
 
-            .skill-list li {
-                color: var(--text-primary);
-                margin: 8px 0;
-                padding-left: 20px;
-                position: relative;
+            .node-body ul li {
+                padding: 3px 0;
             }
 
-            .skill-list li::before {
-                content: "◦";
-                position: absolute;
-                left: 0;
-                color: var(--text-accent);
+            .node-body ul li::before {
+                content: "→  ";
+                color: var(--muted);
             }
 
-            .hobby-grid {
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-                gap: 20px;
-                margin-top: 20px;
-            }
-
-            .hobby-item {
-                background: var(--bg-tertiary);
-                border: 1px solid var(--border);
-                border-radius: 6px;
-                padding: 20px;
-                position: relative;
-            }
-
-            .hobby-item h3 {
-                color: var(--text-orange);
-                margin-bottom: 10px;
-                font-weight: 600;
-            }
-
-            .hobby-item h3::before {
-                content: "# ";
-                color: var(--text-secondary);
-            }
-
-            .status-bar {
-                background: var(--bg-secondary);
-                border: 1px solid var(--border);
-                border-radius: 6px;
-                padding: 15px;
-                margin: 20px 0;
-                font-size: 0.9em;
-            }
-
-            .status-item {
+            .tag {
                 display: inline-block;
-                margin-right: 30px;
-                color: var(--text-secondary);
+                padding: 1px 7px;
+                background: rgba(115, 208, 255, 0.07);
+                border: 1px solid rgba(115, 208, 255, 0.16);
+                border-radius: 3px;
+                font-size: 11px;
+                color: var(--accent);
+                margin: 2px 2px 2px 0;
             }
 
-            .status-value {
-                color: var(--text-green);
-                font-weight: 600;
+            .tag.g {
+                background: rgba(186, 230, 126, 0.07);
+                border-color: rgba(186, 230, 126, 0.16);
+                color: var(--green);
             }
 
-            .contact-terminal {
-                background: var(--bg-tertiary);
-                border: 1px solid var(--border);
-                border-radius: 6px;
-                padding: 20px;
-                font-family: "JetBrains Mono", monospace;
+            .kv {
+                display: flex;
+                gap: 8px;
+                padding: 3px 0;
+                font-size: 12px;
             }
 
-            .contact-line {
-                margin: 10px 0;
+            .kv .k {
+                color: var(--accent);
+                min-width: 72px;
+                flex-shrink: 0;
+            }
+
+            .kv .v {
+                color: var(--text);
+            }
+
+            /* ── Draw node ──────────────────────────────────────────── */
+
+            .draw-toolbar {
                 display: flex;
                 align-items: center;
+                gap: 5px;
+                padding-bottom: 10px;
+                margin-bottom: 10px;
+                border-bottom: 1px solid var(--node-border);
             }
 
-            .contact-line .prompt {
-                margin-right: 10px;
+            .color-swatch {
+                width: 14px;
+                height: 14px;
+                border-radius: 50%;
+                border: 2px solid transparent;
+                cursor: pointer;
+                flex-shrink: 0;
+                transition:
+                    border-color 0.1s,
+                    transform 0.1s;
             }
 
-            .social-links {
+            .color-swatch.active {
+                border-color: rgba(255, 255, 255, 0.65);
+                transform: scale(1.25);
+            }
+
+            .color-swatch:hover:not(.active) {
+                transform: scale(1.15);
+            }
+
+            .draw-sizes {
                 display: flex;
-                gap: 20px;
-                margin-top: 20px;
-                flex-wrap: wrap;
+                align-items: center;
+                gap: 5px;
+                margin-left: auto;
             }
 
-            .social-link {
-                color: var(--text-blue);
-                text-decoration: none;
-                padding: 8px 15px;
-                border: 1px solid var(--border);
+            .size-btn {
+                background: var(--muted);
+                border: none;
+                border-radius: 50%;
+                cursor: pointer;
+                display: block;
+                transition:
+                    background 0.1s,
+                    transform 0.1s;
+            }
+
+            .size-btn.active {
+                background: var(--text);
+            }
+
+            .size-btn:hover {
+                transform: scale(1.2);
+            }
+
+            .draw-clear {
+                background: none;
+                border: 1px solid var(--node-border);
+                color: var(--muted);
+                font-family: var(--mono);
+                font-size: 11px;
+                padding: 2px 7px;
+                border-radius: 3px;
+                cursor: pointer;
+                margin-left: 4px;
+                transition:
+                    color 0.1s,
+                    border-color 0.1s;
+            }
+
+            .draw-clear:hover {
+                color: var(--text);
+                border-color: var(--muted);
+            }
+
+            .draw-canvas {
+                display: block;
+                border-radius: 3px;
+                cursor: crosshair;
+            }
+
+            .resize-handle {
+                position: absolute;
+                bottom: 5px;
+                right: 5px;
+                width: 14px;
+                height: 14px;
+                cursor: nwse-resize;
+                opacity: 0.3;
+                transition: opacity 0.15s;
+            }
+
+            .resize-handle::after {
+                content: "";
+                position: absolute;
+                inset: 3px 0 0 3px;
+                border-right: 2px solid var(--muted);
+                border-bottom: 2px solid var(--muted);
+            }
+
+            .node:hover .resize-handle {
+                opacity: 0.75;
+            }
+
+            /* ── Matrix canvas ──────────────────────────────────────── */
+
+            #matrix-canvas {
+                position: absolute;
+                inset: 0;
+                pointer-events: none;
+                opacity: 0;
+                transition: opacity 0.6s ease;
+            }
+
+            #matrix-canvas.visible {
+                opacity: 1;
+            }
+
+            /* ── Hint / toggle ──────────────────────────────────────── */
+
+            #hint {
+                position: fixed;
+                bottom: 18px;
+                left: 18px;
+                font-family: var(--mono);
+                font-size: 11px;
+                color: var(--muted);
+                pointer-events: none;
+                line-height: 2;
+            }
+
+            #matrix-toggle {
+                position: fixed;
+                bottom: 18px;
+                right: 18px;
+                background: none;
+                border: 1px solid var(--node-border);
+                color: var(--muted);
+                font-family: var(--mono);
+                font-size: 11px;
+                padding: 6px 10px;
                 border-radius: 4px;
-                transition: all 0.3s ease;
-                font-family: "JetBrains Mono", monospace;
+                cursor: pointer;
+                transition:
+                    color 0.15s,
+                    border-color 0.15s;
             }
 
-            .social-link:hover {
-                background: var(--bg-tertiary);
-                border-color: var(--text-accent);
-                color: var(--text-accent);
+            #matrix-toggle:hover {
+                color: var(--accent);
+                border-color: var(--accent);
             }
 
-            .footer {
-                text-align: center;
-                padding: 40px 0;
-                border-top: 2px solid var(--border);
-                margin-top: 60px;
-                color: var(--text-secondary);
-            }
-
-            @media (max-width: 768px) {
-                .container {
-                    padding: 0 15px;
-                }
-
-                .section {
-                    padding: 20px;
-                }
-
-                .ascii-art {
-                    font-size: 10px;
-                }
-
-                .skill-grid,
-                .hobby-grid {
-                    grid-template-columns: 1fr;
-                }
-            }
-
-            /* Scrollbar styling */
-            ::-webkit-scrollbar {
-                width: 8px;
-            }
-
-            ::-webkit-scrollbar-track {
-                background: var(--bg-primary);
-            }
-
-            ::-webkit-scrollbar-thumb {
-                background: var(--border);
-                border-radius: 4px;
-            }
-
-            ::-webkit-scrollbar-thumb:hover {
-                background: var(--text-secondary);
+            #matrix-toggle.active {
+                color: var(--accent);
+                border-color: var(--accent);
             }
         </style>
     </head>
-    <body hx-boost="true">
-        <div class="matrix-bg">
-            <canvas id="matrixCanvas"></canvas>
+    <body>
+        <div id="canvas-root">
+            <canvas id="matrix-canvas"></canvas>
+            <canvas id="grid-canvas"></canvas>
+            <div id="world"></div>
         </div>
-
-        <header>
-            <div class="container">
-                <div class="terminal-header">
-                    <div class="ascii-art">
-                        <canvas id="particleCanvas"></canvas>
-                    </div>
-                    <div class="tree-structure">
-                        <span class="output"
-                            >Xander Emili | Software Developer</span
-                        ><br />
-                        <span class="prompt">user@machine</span>:<span
-                            class="command"
-                            >~</span
-                        >$ ls -la social/<br />
-                        <div class="social-links">
-                            <a
-                                href="https://github.com/xanemili"
-                                class="social-link"
-                                >./github</a
-                            >
-                            <a
-                                href="https://www.linkedin.com/in/xemili/"
-                                class="social-link"
-                                >./linkedin</a
-                            >
-                            <a
-                                href="mailto:xanemili@proton.me"
-                                class="social-link"
-                                >./email</a
-                            >
-                            <a
-                                href="#"
-                                onclick="
-                                    downloadBlob(
-                                        'resume.html',
-                                        'Alexander_Emili_Resume.html',
-                                    );
-                                    return false;
-                                "
-                                class="social-link"
-                            >
-                                ./resume.html
-                            </a>
-                            <a
-                                href="#"
-                                onclick="
-                                    downloadBlob(
-                                        'resume.md',
-                                        'Alexander_Emili_Resume.md',
-                                    );
-                                    return false;
-                                "
-                                class="social-link"
-                            >
-                                ./resume.md
-                            </a>
-                            <a
-                                href="#"
-                                onclick="
-                                    downloadBlob(
-                                        'resume.pdf',
-                                        'Alexander_Emili_Resume.pdf',
-                                    );
-                                    return false;
-                                "
-                                class="social-link"
-                            >
-                                ./resume.pdf
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </header>
-
-        <main>
-            <div class="container">
-                <div class="status-bar">
-                    <span class="status-item"
-                        >Last Login:
-                        <span class="status-value">Today</span></span
-                    >
-                    <span class="status-item"
-                        >Status:
-                        <span class="status-value">Available</span></span
-                    >
-                    <span class="status-item"
-                        >Uptime: <span class="status-value">97.9%</span></span
-                    >
-                </div>
-
-                <section class="section" data-title="ABOUT">
-                    <h2>./about.md</h2>
-                    <p>
-                        Former investment analyst who decided building apps was
-                        more fun
-                    </p>
-                </section>
-
-                <section class="section" data-title="EXPERIENCE">
-                    <h2>tree ./experience/</h2>
-                    <div class="tree-structure">
-                        <div class="tree-children">
-                            <div class="tree-leaf">
-                                <strong>primary-role/</strong>
-                                <div class="tree-children">
-                                    <div class="tree-leaf">
-                                        <span style="color: var(--text-blue)">
-                                            company:
-                                        </span>
-                                        Sandbox Banking
-                                    </div>
-                                    <div class="tree-leaf">
-                                        <span style="color: var(--text-blue)">
-                                            position:
-                                        </span>
-                                        Platform Engineer
-                                    </div>
-                                    <div class="tree-leaf">
-                                        <span style="color: var(--text-blue)">
-                                            duration:
-                                        </span>
-                                        2022 - 2025
-                                    </div>
-                                    <div class="tree-leaf">
-                                        <span style="color: var(--text-blue)">
-                                            description:
-                                        </span>
-                                        Led development of ETL platform serving
-                                        100+ enterprise customers.
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="tree-leaf">
-                                <strong>side-projects/</strong>
-                                <div class="tree-children">
-                                    <div class="tree-leaf">
-                                        <a
-                                            href="https://slaythespirestats.xanxan.me"
-                                        >
-                                            Slay the Spire Run Statistics
-                                        </a>
-                                        <div class="tree-children">
-                                            <div class="tree-leaf project-meta">
-                                                React, Typescript, Cloudflare,
-                                                SQLite
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!--<div class="tree-leaf">
-                                        <p>Knead - Recipe sharing platform</p>
-                                        <div class="tree-children">
-                                            <div class="tree-leaf project-meta">
-                                                Svelte, Typescript, Cloudflare,
-                                                Postgres
-                                            </div>
-                                            <div>TBA</div>
-                                        </div>
-                                    </div>-->
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <section class="section">
-                    <h2>./skills --list</h2>
-                    <div class="skill-grid">
-                        <div class="skill-category">
-                            <h4>languages</h4>
-                            <ul class="skill-list">
-                                <li>TypeScript</li>
-                                <li>JavaScript</li>
-                                <li>Python</li>
-                                <li>Go</li>
-                            </ul>
-                        </div>
-
-                        <div class="skill-category">
-                            <h4>frameworks</h4>
-                            <ul class="skill-list">
-                                <li>Vue.js</li>
-                                <li>React/Next.js</li>
-                                <li>Svelte</li>
-                                <li>Django/FastAPI</li>
-                            </ul>
-                        </div>
-
-                        <div class="skill-category">
-                            <h4>cloud tools</h4>
-                            <ul class="skill-list">
-                                <li>Docker</li>
-                                <li>AWS - EC2/RDS/S3</li>
-                                <li>GitHub Actions</li>
-                                <li>Cloudflare</li>
-                            </ul>
-                        </div>
-
-                        <div class="skill-category">
-                            <h4>databases</h4>
-                            <ul class="skill-list">
-                                <li>PostgreSQL</li>
-                                <li>MySQL</li>
-                                <li>SQLite</li>
-                                <li>Redis</li>
-                            </ul>
-                        </div>
-                    </div>
-                </section>
-
-                <section class="section" data-title="CONTACT">
-                    <h2>./contact.sh</h2>
-                    <div class="contact-terminal">
-                        <div class="contact-line">
-                            <span class="prompt">$</span>
-                            <span style="color: var(--text-primary)"
-                                >echo "Feel free to reach out for
-                                collaborations, opportunities, or just to
-                                chat"</span
-                            >
-                        </div>
-                        <div class="contact-line">
-                            <span class="prompt">$</span>
-                            <span style="color: var(--text-primary)"
-                                >rg email contact/email.md</span
-                            >
-                        </div>
-                        <div class="contact-line">
-                            <div
-                                class="output"
-                                style="color: var(--text-green)"
-                            >
-                                1:
-                                <a
-                                    href="mailto:xanemili@proton.me"
-                                    style="color: inherit"
-                                >
-                                    xanemili@proton.me
-                                </a>
-                            </div>
-                        </div>
-                        <div class="contact-line">
-                            <span class="prompt">$</span>
-                            <span style="color: var(--text-primary)"
-                                >curl -s status.api | jq '.availability'</span
-                            >
-                        </div>
-                        <div class="contact-line">
-                            <span
-                                class="output"
-                                style="color: var(--text-green)"
-                                >"Open to new opportunities"</span
-                            >
-                        </div>
-                    </div>
-                </section>
-            </div>
-        </main>
-
-        <footer class="footer">
-            <div class="container">
-                <p>© 2026 Xander Emili | Hosted on Cloudflare Pages</p>
-            </div>
-        </footer>
+        <div id="hint">drag canvas · pan<br />scroll · zoom</div>
+        <button id="matrix-toggle">[ rain ]</button>
 
         <script>
-            async function downloadBlob(url, filename) {
-                const res = await fetch(url);
-                const blob = await res.blob();
-                const blobUrl = URL.createObjectURL(blob);
-                const a = document.createElement("a");
-                a.href = blobUrl;
-                a.download = filename;
-                a.click();
-                URL.revokeObjectURL(blobUrl);
-            }
+            // ── Node data ─────────────────────────────────────────────────────
+            const NODES = [
+                {
+                    id: "intro",
+                    title: "xander",
+                    x: 0,
+                    y: 0,
+                    open: true,
+                    html: `
+            <p class="dim" style="margin-bottom:10px">alexander emili</p>
+            <p>investment analyst who decided building apps was more fun</p>
+            <p style="margin-top:10px">platform engineer &nbsp;·&nbsp; <button class="more-btn">more →</button></p>
+            <div class="more-content">
+              <div style="margin-top:12px;border-top:1px solid var(--node-border);padding-top:10px">
+                <div class="kv"><span class="k">company</span><span class="v">Sandbox Banking</span></div>
+                <div class="kv"><span class="k">role</span><span class="v">Platform Engineer</span></div>
+                <div class="kv"><span class="k">duration</span><span class="v">2022 – 2025</span></div>
+                <p class="dim" style="margin-top:8px">Led development of ETL platform serving 100+ enterprise customers.</p>
+              </div>
+            </div>
+          `,
+                },
+                {
+                    id: "links",
+                    title: "links",
+                    x: 320,
+                    y: 0,
+                    open: true,
+                    html: `
+            <ul>
+              <li><a href="https://github.com/xanemili" target="_blank" rel="noopener">github</a></li>
+              <li><a href="https://www.linkedin.com/in/xemili/" target="_blank" rel="noopener">linkedin</a></li>
+              <li><a href="mailto:xanemili@proton.me">email</a></li>
+              <li><a href="/resume.html">resume</a></li>
+            </ul>
+          `,
+                },
+                {
+                    id: "projects",
+                    title: "projects",
+                    x: 320,
+                    y: 195,
+                    open: false,
+                    html: `
+            <p style="margin-bottom:10px">
+              <a href="https://slaythespirestats.xanxan.me" target="_blank" rel="noopener">
+                Slay the Spire Run Statistics
+              </a>
+            </p>
+            <div>
+              <span class="tag">React</span>
+              <span class="tag">TypeScript</span>
+              <span class="tag">Cloudflare</span>
+              <span class="tag">SQLite</span>
+            </div>
+          `,
+                },
+                {
+                    id: "skills",
+                    title: "skills",
+                    x: 160,
+                    y: 370,
+                    open: false,
+                    html: `
+            <p class="dim" style="margin-bottom:8px">languages</p>
+            <div style="margin-bottom:12px">
+              <span class="tag">TypeScript</span>
+              <span class="tag">JavaScript</span>
+              <span class="tag">Python</span>
+              <span class="tag">Go</span>
+            </div>
+            <p class="dim" style="margin-bottom:8px">frameworks</p>
+            <div style="margin-bottom:12px">
+              <span class="tag">Vue</span>
+              <span class="tag">React</span>
+              <span class="tag">Svelte</span>
+              <span class="tag">FastAPI</span>
+              <span class="tag">Django</span>
+            </div>
+            <p class="dim" style="margin-bottom:8px">infra</p>
+            <div>
+              <span class="tag g">Cloudflare</span>
+              <span class="tag g">Docker</span>
+              <span class="tag g">AWS</span>
+              <span class="tag g">GitHub</span>
+            </div>
+          `,
+                },
+                {
+                    id: "draw",
+                    title: "draw",
+                    x: 640,
+                    y: 0,
+                    open: true,
+                    html: `
+            <div class="draw-toolbar">
+              <button class="color-swatch active" data-color="#d9d7ce" style="background:#d9d7ce" title="white"></button>
+              <button class="color-swatch" data-color="#f28779" style="background:#f28779" title="red"></button>
+              <button class="color-swatch" data-color="#ffcc66" style="background:#ffcc66" title="yellow"></button>
+              <button class="color-swatch" data-color="#bae67e" style="background:#bae67e" title="green"></button>
+              <button class="color-swatch" data-color="#73d0ff" style="background:#73d0ff" title="blue"></button>
+              <button class="color-swatch" data-color="#d4bfff" style="background:#d4bfff" title="purple"></button>
+              <div class="draw-sizes">
+                <button class="size-btn active" data-size="2" style="width:6px;height:6px"></button>
+                <button class="size-btn" data-size="5" style="width:10px;height:10px"></button>
+                <button class="size-btn" data-size="12" style="width:16px;height:16px"></button>
+              </div>
+              <button class="draw-clear">clear</button>
+            </div>
+            <canvas class="draw-canvas" width="262" height="180"></canvas>
+          `,
+                },
+            ];
 
-            // Animation state
-            let isPageVisible = true;
-            document.addEventListener("visibilitychange", () => {
-                isPageVisible = document.visibilityState === "visible";
-            });
+            // ── DOM ───────────────────────────────────────────────────────────
+            const root = document.getElementById("canvas-root");
+            const gc = document.getElementById("grid-canvas");
+            const worldEl = document.getElementById("world");
+            const gctx = gc.getContext("2d");
 
-            // Book Particle Effect
-            const particleCanvas = document.getElementById("particleCanvas");
-            const pCtx = particleCanvas.getContext("2d");
+            // ── State ─────────────────────────────────────────────────────────
+            let wt = { x: 0, y: 0, s: 1 };
+            let drag = null;
+            let drawing = null; // active draw stroke: { canvas, ctx, color, size }
+            let matrixOn = false;
+            let nextZ = 10;
+            const nodeMap = {};
 
-            // Set canvas size
-            function resizeParticleCanvas() {
-                const rect =
-                    particleCanvas.parentElement.getBoundingClientRect();
-                particleCanvas.width = rect.width;
-                particleCanvas.height = rect.height;
-                initBooks();
-            }
+            // ── Persistence ───────────────────────────────────────────────────
+            const STORAGE_KEY = "xe-home-v1";
 
-            // Particle class
-            class Particle {
-                constructor(x, y, color) {
-                    this.homeX = x;
-                    this.homeY = y;
-                    this.x = x;
-                    this.y = y;
-                    this.vx = 0;
-                    this.vy = 0;
-                    this.color = color;
-                    this.size = 2;
+            function saveState() {
+                const nodeStates = {};
+                for (const [id, { data }] of Object.entries(nodeMap)) {
+                    nodeStates[id] = { x: data.x, y: data.y, open: data.open };
                 }
-
-                update(mouseX, mouseY) {
-                    const dx = this.x - mouseX;
-                    const dy = this.y - mouseY;
-                    const dist = Math.sqrt(dx * dx + dy * dy);
-                    const minDist = 100;
-
-                    // Scatter when mouse is near
-                    if (dist < minDist) {
-                        const force = (minDist - dist) / minDist;
-                        const angle = Math.atan2(dy, dx);
-                        this.vx += Math.cos(angle) * force * 2;
-                        this.vy += Math.sin(angle) * force * 2;
-                    }
-
-                    // Spring back to home position
-                    const homeForce = 0.05;
-                    this.vx += (this.homeX - this.x) * homeForce;
-                    this.vy += (this.homeY - this.y) * homeForce;
-
-                    // Apply friction
-                    this.vx *= 0.85;
-                    this.vy *= 0.85;
-
-                    // Update position
-                    this.x += this.vx;
-                    this.y += this.vy;
-                }
-
-                draw() {
-                    pCtx.fillStyle = this.color;
-                    pCtx.fillRect(
-                        this.x - this.size / 2,
-                        this.y - this.size / 2,
-                        this.size,
-                        this.size,
+                const drawCanvas =
+                    nodeMap["draw"]?.el.querySelector(".draw-canvas");
+                const drawData = drawCanvas
+                    ? {
+                          w: drawCanvas.width,
+                          h: drawCanvas.height,
+                          img: drawCanvas.toDataURL(),
+                      }
+                    : null;
+                try {
+                    localStorage.setItem(
+                        STORAGE_KEY,
+                        JSON.stringify({
+                            nodes: nodeStates,
+                            world: { x: wt.x, y: wt.y, s: wt.s },
+                            draw: drawData,
+                            matrixOn,
+                        }),
                     );
+                } catch {
+                    // quota exceeded — silently skip
                 }
             }
 
-            let particles = [];
-            let mouse = { x: -1000, y: -1000 };
+            let saveTimer = null;
+            function scheduleSave() {
+                clearTimeout(saveTimer);
+                saveTimer = setTimeout(saveState, 400);
+            }
 
-            // Create book shapes with particles
-            function initBooks() {
-                particles = [];
-                const centerX = particleCanvas.width / 2;
-                const centerY = particleCanvas.height / 2;
+            function loadSaved() {
+                try {
+                    const raw = localStorage.getItem(STORAGE_KEY);
+                    return raw ? JSON.parse(raw) : null;
+                } catch {
+                    return null;
+                }
+            }
 
-                // Calculate book layout to span width
-                const canvasWidth = particleCanvas.width;
-                const bookSpacing = 5;
-                const numBooks = 7;
-                const totalSpacing = bookSpacing * (numBooks - 1);
-                const availableWidth = Math.min(canvasWidth * 0.8, 700);
-                const avgBookWidth = (availableWidth - totalSpacing) / numBooks;
+            // ── Grid ──────────────────────────────────────────────────────────
+            function resizeGrid() {
+                gc.width = window.innerWidth;
+                gc.height = window.innerHeight;
+            }
 
-                // Define book shapes with varied heights and widths
-                const books = [
-                    {
-                        width: avgBookWidth * 0.9,
-                        height: 65,
-                        color: "#73d0ff",
-                        spineColor: "#4a9fd5",
-                    },
-                    {
-                        width: avgBookWidth * 1.1,
-                        height: 75,
-                        color: "#bae67e",
-                        spineColor: "#89b85d",
-                    },
-                    {
-                        width: avgBookWidth * 0.85,
-                        height: 68,
-                        color: "#ffcc66",
-                        spineColor: "#d9a842",
-                    },
-                    {
-                        width: avgBookWidth * 1.15,
-                        height: 72,
-                        color: "#d4bfff",
-                        spineColor: "#a68fd9",
-                    },
-                    {
-                        width: avgBookWidth * 0.95,
-                        height: 70,
-                        color: "#ff8f40",
-                        spineColor: "#d96b1f",
-                    },
-                    {
-                        width: avgBookWidth * 1.05,
-                        height: 77,
-                        color: "#f28779",
-                        spineColor: "#c86b5e",
-                    },
-                    {
-                        width: avgBookWidth * 0.9,
-                        height: 66,
-                        color: "#73d0ff",
-                        spineColor: "#4a9fd5",
-                    },
-                ];
+            function drawGrid() {
+                const w = gc.width,
+                    h = gc.height;
+                gctx.clearRect(0, 0, w, h);
 
-                // Calculate starting X position
-                const totalBooksWidth =
-                    books.reduce((sum, book) => sum + book.width, 0) +
-                    totalSpacing;
-                let currentX = centerX - totalBooksWidth / 2;
+                const spacing = 40 * wt.s;
+                if (spacing < 6) return;
 
-                // Create particles for each book
-                books.forEach((book, index) => {
-                    const spacing = 2.5;
-                    const spineWidth = 4;
+                const ox = ((wt.x % spacing) + spacing) % spacing;
+                const oy = ((wt.y % spacing) + spacing) % spacing;
 
-                    // Create book cover particles
-                    const cols = Math.ceil(book.width / spacing);
-                    const rows = Math.ceil(book.height / spacing);
+                gctx.strokeStyle = "rgba(255,255,255,0.04)";
+                gctx.lineWidth = 1;
+                gctx.beginPath();
+                for (let x = ox - spacing; x < w + spacing; x += spacing) {
+                    gctx.moveTo(x, 0);
+                    gctx.lineTo(x, h);
+                }
+                for (let y = oy - spacing; y < h + spacing; y += spacing) {
+                    gctx.moveTo(0, y);
+                    gctx.lineTo(w, y);
+                }
+                gctx.stroke();
+            }
 
-                    for (let row = 0; row < rows; row++) {
-                        for (let col = 0; col < cols; col++) {
-                            const x = currentX + col * spacing;
-                            const y = centerY - book.height / 2 + row * spacing;
+            function applyTransform() {
+                worldEl.style.transform = `translate(${wt.x}px,${wt.y}px) scale(${wt.s})`;
+                drawGrid();
+            }
 
-                            // Left spine (darker)
-                            if (col < spineWidth / spacing) {
-                                particles.push(
-                                    new Particle(x, y, book.spineColor),
-                                );
-                            } else {
-                                particles.push(new Particle(x, y, book.color));
-                            }
-                        }
-                    }
+            // ── Node factory ──────────────────────────────────────────────────
+            function createNode(data) {
+                const el = document.createElement("div");
+                el.className = "node" + (data.open ? "" : " closed");
+                el.innerHTML = `
+          <div class="node-header">
+            <div class="node-pip"></div>
+            <span class="node-title">${data.title}</span>
+            <button class="node-btn">${data.open ? "−" : "+"}</button>
+          </div>
+          <div class="node-body">
+            <div class="node-body-inner">${data.html}</div>
+          </div>
+        `;
 
-                    // Add shelf base line under each book
-                    const baseY = centerY + book.height / 2 + 2;
-                    for (let col = 0; col < cols; col++) {
-                        const x = currentX + col * spacing;
-                        particles.push(new Particle(x, baseY, "#5c6773"));
-                    }
+                placeNode(el, data.x, data.y);
+                worldEl.appendChild(el);
+                nodeMap[data.id] = { data, el };
 
-                    currentX += book.width + bookSpacing;
+                const header = el.querySelector(".node-header");
+                const btn = el.querySelector(".node-btn");
+
+                header.addEventListener("mousedown", (e) => {
+                    if (e.target.closest(".node-btn")) return;
+                    e.stopPropagation();
+                    e.preventDefault();
+                    el.style.zIndex = nextZ++;
+                    drag = {
+                        type: "node",
+                        id: data.id,
+                        sx: e.clientX,
+                        sy: e.clientY,
+                        ox: data.x,
+                        oy: data.y,
+                    };
+                    document.body.style.userSelect = "none";
                 });
 
-                // Add text particles for "xander's devlog"
-                addTextParticles(
-                    centerX,
-                    centerY + 50,
-                    "xander's devlog",
-                    "#d9d7ce",
-                );
-            }
-
-            // Create particles forming text
-            function addTextParticles(startX, y, text, color) {
-                pCtx.font = "14px JetBrains Mono";
-                const textWidth = pCtx.measureText(text).width;
-                const x = startX - textWidth / 2;
-
-                // Sample pixels from text
-                pCtx.fillStyle = color;
-                pCtx.fillText(text, x, y);
-
-                const imageData = pCtx.getImageData(
-                    x - 5,
-                    y - 15,
-                    textWidth + 10,
-                    20,
-                );
-                pCtx.clearRect(
-                    0,
-                    0,
-                    particleCanvas.width,
-                    particleCanvas.height,
-                );
-
-                const spacing = 3;
-                for (let py = 0; py < imageData.height; py += spacing) {
-                    for (let px = 0; px < imageData.width; px += spacing) {
-                        const i = (py * imageData.width + px) * 4;
-                        if (imageData.data[i + 3] > 128) {
-                            particles.push(
-                                new Particle(x + px - 5, y - 15 + py, color),
-                            );
-                        }
-                    }
-                }
-            }
-
-            // Track mouse position
-            particleCanvas.addEventListener("mousemove", (e) => {
-                const rect = particleCanvas.getBoundingClientRect();
-                mouse.x = e.clientX - rect.left;
-                mouse.y = e.clientY - rect.top;
-            });
-
-            particleCanvas.addEventListener("mouseleave", () => {
-                mouse.x = -1000;
-                mouse.y = -1000;
-            });
-
-            // Animation loop
-            function animateParticles() {
-                if (!isPageVisible) {
-                    requestAnimationFrame(animateParticles);
-                    return;
-                }
-
-                pCtx.fillStyle = "rgba(36, 43, 56, 0.3)";
-                pCtx.fillRect(
-                    0,
-                    0,
-                    particleCanvas.width,
-                    particleCanvas.height,
-                );
-
-                particles.forEach((particle) => {
-                    particle.update(mouse.x, mouse.y);
-                    particle.draw();
+                btn.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    data.open = !data.open;
+                    el.classList.toggle("closed", !data.open);
+                    btn.textContent = data.open ? "−" : "+";
+                    scheduleSave();
                 });
 
-                requestAnimationFrame(animateParticles);
+                return el;
             }
 
-            // Initialize
-            resizeParticleCanvas();
-            window.addEventListener("resize", resizeParticleCanvas);
-            animateParticles();
-
-            // Matrix rain effect
-            const canvas = document.getElementById("matrixCanvas");
-            const ctx = canvas.getContext("2d");
-
-            // Set canvas size
-            function resizeCanvas() {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
-            }
-            resizeCanvas();
-            window.addEventListener("resize", resizeCanvas);
-
-            // Matrix characters - mix of letters, numbers, and symbols
-            const chars =
-                "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%^&*()_+-=[]{}|;:,.<>?/~`";
-            const fontSize = 14;
-            const columns = canvas.width / fontSize;
-
-            // Array to track y-position of drops for each column
-            const drops = [];
-            for (let i = 0; i < columns; i++) {
-                drops[i] = Math.random() * -100; // Start at random heights above the screen
+            function placeNode(el, x, y) {
+                el.style.transform = `translate(${x}px,${y}px)`;
             }
 
-            // Draw function
-            function draw() {
-                if (!isPageVisible) return;
+            // ── Pan ───────────────────────────────────────────────────────────
+            root.addEventListener("mousedown", (e) => {
+                if (!e.target.closest(".node")) {
+                    drag = {
+                        type: "world",
+                        sx: e.clientX,
+                        sy: e.clientY,
+                        ox: wt.x,
+                        oy: wt.y,
+                    };
+                    root.style.cursor = "grabbing";
+                    document.body.style.userSelect = "none";
+                }
+            });
 
-                // Semi-transparent black to create fade effect
-                ctx.fillStyle = "rgba(31, 36, 48, 0.05)";
+            window.addEventListener("mousemove", (e) => {
+                if (drag) {
+                    const dx = e.clientX - drag.sx;
+                    const dy = e.clientY - drag.sy;
+
+                    if (drag.type === "world") {
+                        wt.x = drag.ox + dx;
+                        wt.y = drag.oy + dy;
+                        applyTransform();
+                    } else if (drag.type === "node") {
+                        const { data, el } = nodeMap[drag.id];
+                        data.x = drag.ox + dx / wt.s;
+                        data.y = drag.oy + dy / wt.s;
+                        placeNode(el, data.x, data.y);
+                    } else if (drag.type === "resize") {
+                        const newW = Math.max(220, drag.ow + dx / wt.s);
+                        const newH = Math.max(100, drag.oh + dy / wt.s);
+                        drag.el.style.width = Math.round(newW) + "px";
+                        drag.canvas.style.width = Math.round(newW - 28) + "px";
+                        drag.canvas.style.height = Math.round(newH) + "px";
+                    }
+                }
+
+                if (drawing) {
+                    const rect = drawing.canvas.getBoundingClientRect();
+                    const x = (e.clientX - rect.left) / wt.s;
+                    const y = (e.clientY - rect.top) / wt.s;
+                    drawing.ctx.lineTo(x, y);
+                    drawing.ctx.strokeStyle = drawing.color;
+                    drawing.ctx.lineWidth = drawing.size;
+                    drawing.ctx.lineCap = "round";
+                    drawing.ctx.lineJoin = "round";
+                    drawing.ctx.stroke();
+                    drawing.ctx.beginPath();
+                    drawing.ctx.moveTo(x, y);
+                }
+            });
+
+            window.addEventListener("mouseup", () => {
+                if (drag && drag.type === "resize") {
+                    const canvas = drag.canvas;
+                    const finalW =
+                        Math.round(parseFloat(canvas.style.width)) ||
+                        canvas.width;
+                    const finalH =
+                        Math.round(parseFloat(canvas.style.height)) ||
+                        canvas.height;
+
+                    // Preserve drawing content across the resize
+                    const tmp = document.createElement("canvas");
+                    tmp.width = canvas.width;
+                    tmp.height = canvas.height;
+                    tmp.getContext("2d").drawImage(canvas, 0, 0);
+
+                    canvas.width = finalW;
+                    canvas.height = finalH;
+                    canvas.style.width = "";
+                    canvas.style.height = "";
+
+                    const rCtx = canvas.getContext("2d");
+                    rCtx.fillStyle = "#0d1117";
+                    rCtx.fillRect(0, 0, finalW, finalH);
+                    rCtx.drawImage(tmp, 0, 0);
+                }
+
+                drag = null;
+                drawing = null;
+                root.style.cursor = "";
+                document.body.style.userSelect = "";
+                scheduleSave();
+            });
+
+            // ── Zoom ──────────────────────────────────────────────────────────
+            root.addEventListener(
+                "wheel",
+                (e) => {
+                    e.preventDefault();
+                    const factor = e.deltaY < 0 ? 1.08 : 1 / 1.08;
+                    const ns = Math.min(Math.max(wt.s * factor, 0.15), 4);
+                    const cx = e.clientX,
+                        cy = e.clientY;
+                    wt.x = cx + (wt.x - cx) * (ns / wt.s);
+                    wt.y = cy + (wt.y - cy) * (ns / wt.s);
+                    wt.s = ns;
+                    applyTransform();
+                    scheduleSave();
+                },
+                { passive: false },
+            );
+
+            window.addEventListener("resize", () => {
+                resizeGrid();
+                drawGrid();
+                resizeMatrix();
+            });
+
+            // ── Draw node setup ───────────────────────────────────────────────
+            function setupDrawNode(nodeEl) {
+                const canvas = nodeEl.querySelector(".draw-canvas");
+                const ctx = canvas.getContext("2d");
+
+                let color = "#d9d7ce";
+                let size = 2;
+
+                ctx.fillStyle = "#0d1117";
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-                // Set text color to the blue accent color
-                ctx.fillStyle = "#73d0ff";
-                ctx.font = fontSize + "px JetBrains Mono, monospace";
+                nodeEl.querySelectorAll(".color-swatch").forEach((btn) => {
+                    btn.addEventListener("click", (e) => {
+                        e.stopPropagation();
+                        nodeEl
+                            .querySelectorAll(".color-swatch")
+                            .forEach((b) => b.classList.remove("active"));
+                        btn.classList.add("active");
+                        color = btn.dataset.color;
+                    });
+                });
 
-                // Loop through drops
+                nodeEl.querySelectorAll(".size-btn").forEach((btn) => {
+                    btn.addEventListener("click", (e) => {
+                        e.stopPropagation();
+                        nodeEl
+                            .querySelectorAll(".size-btn")
+                            .forEach((b) => b.classList.remove("active"));
+                        btn.classList.add("active");
+                        size = parseInt(btn.dataset.size);
+                    });
+                });
+
+                nodeEl
+                    .querySelector(".draw-clear")
+                    .addEventListener("click", (e) => {
+                        e.stopPropagation();
+                        ctx.fillStyle = "#0d1117";
+                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    });
+
+                canvas.addEventListener("contextmenu", (e) =>
+                    e.preventDefault(),
+                );
+
+                canvas.addEventListener("mousedown", (e) => {
+                    if (e.button !== 0 && e.button !== 2) return;
+                    e.stopPropagation();
+                    const rect = canvas.getBoundingClientRect();
+                    const x = (e.clientX - rect.left) / wt.s;
+                    const y = (e.clientY - rect.top) / wt.s;
+
+                    const strokeColor = e.button === 2 ? "#0d1117" : color;
+                    const strokeSize =
+                        e.button === 2 ? Math.max(size * 3, 16) : size;
+
+                    ctx.beginPath();
+                    ctx.arc(x, y, strokeSize / 2, 0, Math.PI * 2);
+                    ctx.fillStyle = strokeColor;
+                    ctx.fill();
+
+                    ctx.beginPath();
+                    ctx.moveTo(x, y);
+                    drawing = {
+                        canvas,
+                        ctx,
+                        color: strokeColor,
+                        size: strokeSize,
+                    };
+                    document.body.style.userSelect = "none";
+                });
+
+                // Resize handle
+                const handle = document.createElement("div");
+                handle.className = "resize-handle";
+                nodeEl.appendChild(handle);
+
+                handle.addEventListener("mousedown", (e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    drag = {
+                        type: "resize",
+                        el: nodeEl,
+                        canvas,
+                        sx: e.clientX,
+                        sy: e.clientY,
+                        ow: nodeEl.offsetWidth,
+                        oh: canvas.height,
+                    };
+                    document.body.style.userSelect = "none";
+                });
+            }
+
+            // ── Matrix rain ───────────────────────────────────────────────────
+            const mCanvas = document.getElementById("matrix-canvas");
+            const mCtx = mCanvas.getContext("2d");
+            const MATRIX_CHARS =
+                "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%^&*()_+-=[]{}|;:,.<>?/~`";
+            const MATRIX_SIZE = 14;
+            let matrixRaf = null;
+            let matrixLastFrame = 0;
+            let drops = [];
+
+            function resizeMatrix() {
+                mCanvas.width = window.innerWidth;
+                mCanvas.height = window.innerHeight;
+                drops = Array.from(
+                    { length: Math.floor(mCanvas.width / MATRIX_SIZE) },
+                    () => Math.random() * -100,
+                );
+            }
+
+            function drawMatrix() {
+                mCtx.fillStyle = "rgba(24,24,36,0.05)";
+                mCtx.fillRect(0, 0, mCanvas.width, mCanvas.height);
+                mCtx.fillStyle = "#73d0ff";
+                mCtx.font = `${MATRIX_SIZE}px 'JetBrains Mono', monospace`;
                 for (let i = 0; i < drops.length; i++) {
-                    // Random character
-                    const text = chars.charAt(
-                        Math.floor(Math.random() * chars.length),
-                    );
-
-                    // Draw character
-                    ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-
-                    // Reset drop to top randomly after it crosses the screen
+                    const ch =
+                        MATRIX_CHARS[
+                            Math.floor(Math.random() * MATRIX_CHARS.length)
+                        ];
+                    mCtx.fillText(ch, i * MATRIX_SIZE, drops[i] * MATRIX_SIZE);
                     if (
-                        drops[i] * fontSize > canvas.height &&
+                        drops[i] * MATRIX_SIZE > mCanvas.height &&
                         Math.random() > 0.975
                     ) {
                         drops[i] = 0;
                     }
-
-                    // Increment Y coordinate
                     drops[i]++;
                 }
             }
 
-            // Animation loop
-            let matrixInterval;
-            function startMatrix() {
-                clearInterval(matrixInterval);
-                matrixInterval = setInterval(draw, 33);
+            function matrixFrame(ts) {
+                if (!matrixOn) {
+                    matrixRaf = null;
+                    return;
+                }
+                matrixRaf = requestAnimationFrame(matrixFrame);
+                if (ts - matrixLastFrame < 33) return;
+                matrixLastFrame = ts;
+                drawMatrix();
             }
-            startMatrix();
 
-            // Handle visibility changes
-            document.addEventListener("visibilitychange", () => {
-                if (document.visibilityState === "visible") {
-                    startMatrix();
+            function setMatrix(on) {
+                matrixOn = on;
+                const btn = document.getElementById("matrix-toggle");
+                btn.classList.toggle("active", on);
+                btn.textContent = on ? "[ rain on ]" : "[ rain ]";
+                mCanvas.classList.toggle("visible", on);
+                if (on) {
+                    if (!matrixRaf)
+                        matrixRaf = requestAnimationFrame(matrixFrame);
                 } else {
-                    clearInterval(matrixInterval);
+                    // let the fade-out finish then clear
+                    setTimeout(
+                        () =>
+                            mCtx.clearRect(0, 0, mCanvas.width, mCanvas.height),
+                        650,
+                    );
                 }
+                scheduleSave();
+            }
+
+            document
+                .getElementById("matrix-toggle")
+                .addEventListener("click", () => {
+                    setMatrix(!matrixOn);
+                });
+
+            // ── Init ──────────────────────────────────────────────────────────
+            resizeGrid();
+            resizeMatrix();
+
+            const saved = loadSaved();
+
+            // Overlay saved positions/open states onto defaults
+            if (saved?.nodes) {
+                for (const node of NODES) {
+                    const s = saved.nodes[node.id];
+                    if (s) {
+                        node.x = s.x;
+                        node.y = s.y;
+                        node.open = s.open;
+                    }
+                }
+            }
+
+            // Restore world transform or use default centering
+            if (saved?.world) {
+                wt.x = saved.world.x;
+                wt.y = saved.world.y;
+                wt.s = saved.world.s;
+            } else {
+                wt.x = Math.round((window.innerWidth - 610) / 2);
+                wt.y = Math.round((window.innerHeight - 430) / 2);
+            }
+
+            for (const data of NODES) {
+                createNode(data);
+                if (data.id === "draw") setupDrawNode(nodeMap["draw"].el);
+            }
+
+            // Wire up intro "more" button to expand experience inline
+            const introEl = nodeMap["intro"].el;
+            const moreBtn = introEl.querySelector(".more-btn");
+            const moreContent = introEl.querySelector(".more-content");
+            moreBtn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                const open = moreContent.classList.toggle("open");
+                moreBtn.textContent = open ? "less ←" : "more →";
             });
 
-            // Handle resize - reset drops array
-            window.addEventListener("resize", () => {
-                const newColumns = canvas.width / fontSize;
-                drops.length = 0;
-                for (let i = 0; i < newColumns; i++) {
-                    drops[i] = Math.random() * -100;
+            // Restore draw canvas content + dimensions
+            if (saved?.draw) {
+                const { w, h, img: dataURL } = saved.draw;
+                const drawCanvas =
+                    nodeMap["draw"]?.el.querySelector(".draw-canvas");
+                if (drawCanvas) {
+                    drawCanvas.width = w;
+                    drawCanvas.height = h;
+                    nodeMap["draw"].el.style.width = w + 28 + "px";
+                    const img = new Image();
+                    img.onload = () =>
+                        drawCanvas.getContext("2d").drawImage(img, 0, 0);
+                    img.src = dataURL;
                 }
-            });
+            }
+
+            if (saved?.matrixOn) setMatrix(true);
+
+            applyTransform();
         </script>
     </body>
 </html>

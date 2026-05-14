@@ -21,6 +21,6 @@
     "@types/jsdom": "^21.1.7",
     "@types/node": "^24.0.14",
     "@types/pdfkit": "^0.13.7",
-    "wrangler": "^4.80.0"
+    "wrangler": "^4.90.0"
   }
 }
